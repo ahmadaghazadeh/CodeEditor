@@ -1,2 +1,2 @@
 # CodeEditor
-Code Editor Native
+Code Editor Natively
