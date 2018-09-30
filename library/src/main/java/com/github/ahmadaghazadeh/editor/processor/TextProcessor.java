@@ -79,10 +79,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Special thanks:
- * Henry Thompson, Vlad Mihalachi, Trần Lê Duy
- */
 public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements View.OnKeyListener {
 
     private static final String TAG = TextProcessor.class.getSimpleName();

@@ -6,11 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.github.ahmadaghazadeh.editor.keyboard.ExtendedKeyboard
-        android:id="@+id/recycler_view"
+    <FrameLayout
+        android:id="@+id/fragment"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_bar_height"
-        android:visibility="gone"
-        android:background="?attr/colorNumbersBackground"/>
+        android:layout_height="match_parent"/>
+
+    <!--<com.github.ahmadaghazadeh.editor.processor.TextProcessor-->
+        <!--android:id="@+id/textProcessor"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--app:layout_constraintBottom_toTopOf="@+id/extendedKeyboard"-->
+        <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--<com.github.ahmadaghazadeh.editor.keyboard.ExtendedKeyboard-->
+        <!--android:id="@+id/extendedKeyboard"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent" />-->
+
+
 
 </android.support.constraint.ConstraintLayout>

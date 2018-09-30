@@ -32,10 +32,6 @@ import com.github.ahmadaghazadeh.editor.manager.DocumentsManager;
 import com.github.ahmadaghazadeh.editor.processor.TextProcessor;
 import com.github.ahmadaghazadeh.editor.processor.style.StylePaint;
 
-
-/**
- * @author Henry Thompson
- */
 public class GutterView extends View implements OnScrollChangedListener {
 
     private Document mDocument;

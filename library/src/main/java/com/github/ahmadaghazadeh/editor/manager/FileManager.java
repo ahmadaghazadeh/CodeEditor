@@ -56,37 +56,37 @@ public class FileManager {
      * @param document - фрагмент в котором загружен файл.
      * @param file - читаемый файл.
      */
-    @WorkerThread
-    public void loadFile(Document document, FileObject file) throws IOException {
-        if(file.canRead()) {
-            LinesCollection lines = new LinesCollection();
-            StringBuilder stringBuilder = new StringBuilder();
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            int line = 0;
-            int currentLineStart = 0;
-            while(true) {
-                String text = bufferedReader.readLine();
-                if(text == null) {
-                    break;
-                }
-                lines.add(line, currentLineStart);
-                stringBuilder.append(text);
-                stringBuilder.append('\n');
-                currentLineStart += text.length() + 1;
-                line++;
-            }
-            if(lines.getLineCount() == 0) {
-                lines.add(0, 0);
-            }
-            if(stringBuilder.length() >= 1) {
-                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-            }
-            bufferedReader.close();
-            document.setLanguage(LanguageProvider.getLanguage(file)); //ставим язык
-            document.setText(stringBuilder.toString(), 1); //заполняем поле текстом
-            document.setLineStartsList(lines); //подгружаем линии
-        }
-    }
+//    @WorkerThread
+//    public void loadFile(Document document, FileObject file) throws IOException {
+//        if(file.canRead()) {
+//            LinesCollection lines = new LinesCollection();
+//            StringBuilder stringBuilder = new StringBuilder();
+//            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+//            int line = 0;
+//            int currentLineStart = 0;
+//            while(true) {
+//                String text = bufferedReader.readLine();
+//                if(text == null) {
+//                    break;
+//                }
+//                lines.add(line, currentLineStart);
+//                stringBuilder.append(text);
+//                stringBuilder.append('\n');
+//                currentLineStart += text.length() + 1;
+//                line++;
+//            }
+//            if(lines.getLineCount() == 0) {
+//                lines.add(0, 0);
+//            }
+//            if(stringBuilder.length() >= 1) {
+//                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+//            }
+//            bufferedReader.close();
+//            document.setLanguage(LanguageProvider.getLanguage(file)); //ставим язык
+//            document.setText(stringBuilder.toString(), 1); //заполняем поле текстом
+//            document.setLineStartsList(lines); //подгружаем линии
+//        }
+//    }
 
     /**
      * Сохранение выбранного файла.

@@ -22,6 +22,7 @@ package com.github.ahmadaghazadeh.editor.document;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.view.LayoutInflater;
@@ -36,6 +37,7 @@ import com.github.ahmadaghazadeh.editor.document.commons.LinesCollection;
 import com.github.ahmadaghazadeh.editor.manager.FileManager;
 import com.github.ahmadaghazadeh.editor.processor.TextProcessor;
 import com.github.ahmadaghazadeh.editor.processor.language.Language;
+import com.github.ahmadaghazadeh.editor.processor.language.LanguageProvider;
 import com.github.ahmadaghazadeh.editor.processor.utils.Logger;
 import com.github.ahmadaghazadeh.editor.processor.utils.Wrapper;
 import com.github.ahmadaghazadeh.editor.widget.FastScrollerView;
@@ -65,10 +67,10 @@ public class Document extends Fragment implements Serializable {
      * @param filePath - путь к файлу.
      * @return - возвращает открытый документ с заданным параметром filePath.
      */
-    public static Document newInstance(String filePath, boolean isStartPage) {
+    public static Document newInstance(String filePath ) {
         Document document = new Document();
         Bundle bundle = new Bundle();
-        bundle.putBoolean("isStartPage", isStartPage);
+        bundle.putBoolean("isStartPage", false);
         bundle.putString("filePath", filePath);
         document.setArguments(bundle);
         return document;
@@ -102,15 +104,6 @@ public class Document extends Fragment implements Serializable {
             final GutterView mGutterView = view.findViewById(R.id.gutter);
             mGutterView.link(mEditor); //подключаем Gutter к редактору
 
-            String currentPath = args.getString("filePath");
-            assert currentPath != null;
-
-            mFile = new FileObject(currentPath);
-            try {
-                mFileManager.loadFile(this, mFile);
-            } catch (IOException e) {
-                Logger.error(TAG, e);
-            }
 
             refreshEditor(); //подключаем все настройки
             setReadOnly(mWrapper.getReadOnly()); //включаем режим чтения при открытии если он нужен
@@ -120,6 +113,15 @@ public class Document extends Fragment implements Serializable {
             Logger.error(TAG, "onCreateView(), getArguments() = null", null);
         }
         return view;
+    }
+
+    @WorkerThread
+    public void loadFile( String code ,String lang) throws IOException {
+        LinesCollection lines = new LinesCollection();
+        lines.add(0, 0);
+            setLanguage(LanguageProvider.getLanguage(lang)); //ставим язык
+            setText(code, 1); //заполняем поле текстом
+            setLineStartsList(lines); //подгружаем линии
     }
 
     @Override

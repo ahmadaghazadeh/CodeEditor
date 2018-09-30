@@ -28,6 +28,8 @@
         android:layout_alignParentLeft="true"
         android:id="@+id/gutter"/>
 
+    <!--android:dropDownAnchor="@id/tab_layout"-->
+
     <!-- Редактор кода -->
     <!-- Ошибка InflateException может появляться когда в классе есть некоторые implement'ы -->
     <com.github.ahmadaghazadeh.editor.processor.TextProcessor
@@ -38,7 +40,7 @@
         android:bufferType="spannable"
         android:background="?attr/colorDocBackground"
         android:textColor="?attr/colorDocText"
-        android:dropDownAnchor="@id/tab_layout"
+
         android:popupBackground="?attr/colorDropDown"
         android:scrollbarStyle="insideInset"
         android:gravity="top|start"/>

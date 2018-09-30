@@ -24,13 +24,9 @@ import com.github.ahmadaghazadeh.editor.document.commons.FileObject;
 
 public class LanguageProvider {
 
-    /**
-     * Метод для определения языка программирования (нет).
-     * @param file - файл, язык которого хотим получить.
-     * @return - возвращает язык, в зависимости от расширения файла.
-     */
-    public static Language getLanguage(FileObject file) {
-        if(file.getExtension().equals("js")) { //Если это JavaScript (ModPE Script)
+ 
+    public static Language getLanguage(String lang) {
+        if(lang.equals("js")) { //Если это JavaScript (ModPE Script)
             return new JSLanguage(); //ставим соответствующий язык
         } else {
             return null; //иначе, не загружаем язык в редактор (отключаются

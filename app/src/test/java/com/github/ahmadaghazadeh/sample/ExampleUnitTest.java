@@ -1,4 +1,4 @@
-package com.github.ahmadaghazadeh.editor;
+package com.github.ahmadaghazadeh.sample;
 
 import org.junit.Test;
 

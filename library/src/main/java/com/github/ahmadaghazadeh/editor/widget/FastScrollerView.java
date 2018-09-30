@@ -38,9 +38,6 @@ import com.github.ahmadaghazadeh.editor.processor.TextProcessor;
 import com.github.ahmadaghazadeh.editor.processor.style.StylePaint;
 
 
-/**
- * @author Henry Thompson
- */
 public class FastScrollerView extends View implements OnScrollChangedListener {
 
     public static final int STATE_EXITING = 3;
