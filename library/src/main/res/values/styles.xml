@@ -35,10 +35,12 @@
         <item name="colorControlNormal">@color/gray</item>
 
         <item name="fontFamily">@font/main_sans</item>
-        <!--<item name="md_medium_font">josefin_sans_regular.ttf</item>-->
-        <!--<item name="md_regular_font">josefin_sans_regular.ttf</item>-->
+<!--
+        <item name="md_medium_font">josefin_sans_semibold.ttf</item>
+        <item name="md_regular_font">josefin_sans_regular.ttf</item>
+-->
 
-
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowActionModeOverlay">true</item>

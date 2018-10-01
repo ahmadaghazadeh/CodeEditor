@@ -25,25 +25,24 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.github.ahmadaghazadeh.editor.document.Document;
 import com.github.ahmadaghazadeh.editor.document.commons.LinesCollection;
 import com.github.ahmadaghazadeh.editor.interfaces.OnScrollChangedListener;
-import com.github.ahmadaghazadeh.editor.manager.DocumentsManager;
 import com.github.ahmadaghazadeh.editor.processor.TextProcessor;
 import com.github.ahmadaghazadeh.editor.processor.style.StylePaint;
 
 public class GutterView extends View implements OnScrollChangedListener {
 
-    private Document mDocument;
+
     private int bottomLayoutLine;
     private TextProcessor mEditor = null;
     private StylePaint mLinePaint;
     private StylePaint mTextPaint;
     private int topLayoutLine;
+    private LinesCollection lineNumbers;
 
     public GutterView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        if(!isInEditMode())
+        if (!isInEditMode())
             initLineNumbers();
     }
 
@@ -57,11 +56,11 @@ public class GutterView extends View implements OnScrollChangedListener {
         mLinePaint.setStyle(StylePaint.Style.STROKE);
     }
 
-    public void link(TextProcessor editor) {
+    public void link(TextProcessor editor, LinesCollection lineNumbers) {
         if (editor != null) {
             mEditor = editor;
             mEditor.addOnScrollChangedListener(this);
-            mDocument = DocumentsManager.getDisplayedDocument();
+            this.lineNumbers = lineNumbers;
             invalidate();
         }
     }
@@ -74,7 +73,7 @@ public class GutterView extends View implements OnScrollChangedListener {
             if (y >= lineBound || y <= lineBound - lineHeight) {
                 i++;
             } else {
-                return mDocument.getLinesCollection().getLineForIndex(mEditor.getLayout().getLineStart(i));
+                return lineNumbers.getLineForIndex(mEditor.getLayout().getLineStart(i));
             }
         }
         return -1;
@@ -105,31 +104,31 @@ public class GutterView extends View implements OnScrollChangedListener {
             return;
         }
         getTopAndBottomLayoutLines();
-        if (mDocument != null) {
-            LinesCollection list = mDocument.getLinesCollection();
-            if (list != null) {
-                int i = topLayoutLine > 0 ? topLayoutLine - 1 : 0;
-                while (i <= bottomLayoutLine) {
-                    int realLineNumber = list.getLineForIndex(mEditor.getLayout().getLineStart(i));
-                    int prevRealLineNumber;
-                    int lineBottom;
-                    if (i != 0) {
-                        prevRealLineNumber =
-                                list.getLineForIndex(mEditor.getLayout().getLineStart(i - 1));
-                    } else {
-                        prevRealLineNumber = -1;
-                    }
-                    lineBottom = mEditor.getLineBounds(i, null) - mEditor.getScrollY();
-                    if (prevRealLineNumber != realLineNumber) {
-                        canvas.drawText(
-                                Integer.toString(realLineNumber + 1),
-                                5.0f, lineBottom, mTextPaint);
-                    }
-                    i++;
+        if (lineNumbers != null) {
+
+
+            int i = topLayoutLine > 0 ? topLayoutLine - 1 : 0;
+            while (i <= bottomLayoutLine) {
+                int realLineNumber = lineNumbers.getLineForIndex(mEditor.getLayout().getLineStart(i));
+                int prevRealLineNumber;
+                int lineBottom;
+                if (i != 0) {
+                    prevRealLineNumber =
+                            lineNumbers.getLineForIndex(mEditor.getLayout().getLineStart(i - 1));
+                } else {
+                    prevRealLineNumber = -1;
                 }
+                lineBottom = mEditor.getLineBounds(i, null) - mEditor.getScrollY();
+                if (prevRealLineNumber != realLineNumber) {
+                    canvas.drawText(
+                            Integer.toString(realLineNumber + 1),
+                            5.0f, lineBottom, mTextPaint);
+                }
+                i++;
             }
-            mEditor.updateGutter(); //Обновление списка линий (при редактировании текста тоже работает)
         }
+        mEditor.updateGutter(); //Обновление списка линий (при редактировании текста тоже работает)
+
     }
 
     @Override

@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-
 import com.github.ahmadaghazadeh.editor.R;
 import com.github.ahmadaghazadeh.editor.document.commons.FileObject;
 import com.github.ahmadaghazadeh.editor.document.commons.LinesCollection;
@@ -64,10 +63,11 @@ public class Document extends Fragment implements Serializable {
 
     /**
      * Метод для создания и открытия новой вкладки.
+     *
      * @param filePath - путь к файлу.
      * @return - возвращает открытый документ с заданным параметром filePath.
      */
-    public static Document newInstance(String filePath ) {
+    public static Document newInstance(String filePath) {
         Document document = new Document();
         Bundle bundle = new Bundle();
         bundle.putBoolean("isStartPage", false);
@@ -87,28 +87,37 @@ public class Document extends Fragment implements Serializable {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
+        inflater.getContext().setTheme(R.style.Theme_Darcula);
         Bundle args = getArguments();
         View view = null;
-        if(args != null && args.getBoolean("isStartPage")) {
+        if (args != null && args.getBoolean("isStartPage")) {
             view = inflater.inflate(R.layout.fragment_start_page, container, false);
-        } else if(args != null){
+        } else if (args != null) {
             //Если это не стартовая страница, то заполняем соответствующим View фрагмент
-            view = inflater.inflate(R.layout.fragment_document, container, false);
-
-            mEditor = view.findViewById(R.id.editor);
-            mEditor.init(this);
-
-            final FastScrollerView mFastScrollerView = view.findViewById(R.id.fast_scroller);
-            mFastScrollerView.link(mEditor); //подключаем FastScroller к редактору
-
-            final GutterView mGutterView = view.findViewById(R.id.gutter);
-            mGutterView.link(mEditor); //подключаем Gutter к редактору
+            try {
+                view = inflater.inflate(R.layout.fragment_document, container, false);
 
 
-            refreshEditor(); //подключаем все настройки
-            setReadOnly(mWrapper.getReadOnly()); //включаем режим чтения при открытии если он нужен
-            setSyntaxHighlight(mWrapper.getSyntaxHighlight());
-            mEditor.enableUndoRedoStack(); //включаем Undo/Redo ПОСЛЕ открытия файла
+                mEditor = view.findViewById(R.id.editor);
+               // mEditor.init(this);
+
+
+                final FastScrollerView mFastScrollerView = view.findViewById(R.id.fast_scroller);
+                mFastScrollerView.link(mEditor); //подключаем FastScroller к редактору
+
+                final GutterView mGutterView = view.findViewById(R.id.gutter);
+               // mGutterView.link(mEditor,this); //подключаем Gutter к редактору
+
+                loadFile("","js");
+                refreshEditor(); //подключаем все настройки
+                setReadOnly(mWrapper.getReadOnly()); //включаем режим чтения при открытии если он нужен
+                setSyntaxHighlight(mWrapper.getSyntaxHighlight());
+
+                mEditor.enableUndoRedoStack(); //включаем Undo/Redo ПОСЛЕ открытия файла
+            } catch (Exception ex) {
+                ex.getMessage();
+            }
         } else {
             Logger.error(TAG, "onCreateView(), getArguments() = null", null);
         }
@@ -116,12 +125,12 @@ public class Document extends Fragment implements Serializable {
     }
 
     @WorkerThread
-    public void loadFile( String code ,String lang) throws IOException {
+    public void loadFile(String code, String lang) throws IOException {
         LinesCollection lines = new LinesCollection();
         lines.add(0, 0);
-            setLanguage(LanguageProvider.getLanguage(lang)); //ставим язык
-            setText(code, 1); //заполняем поле текстом
-            setLineStartsList(lines); //подгружаем линии
+        setLanguage(LanguageProvider.getLanguage(lang)); //ставим язык
+        setText(code, 1); //заполняем поле текстом
+        setLineStartsList(lines); //подгружаем линии
     }
 
     @Override
@@ -134,7 +143,7 @@ public class Document extends Fragment implements Serializable {
      * Метод для настройки редактора, тут все методы к нему.
      */
     public void refreshEditor() {
-        if(mEditor != null) {
+        if (mEditor != null) {
             mEditor.setTextSize(mWrapper.getFontSize());
             mEditor.setHorizontallyScrolling(!mWrapper.getWrapContent());
             mEditor.setShowLineNumbers(mWrapper.getShowLineNumbers());
@@ -183,31 +192,32 @@ public class Document extends Fragment implements Serializable {
      * @return - возвращает текст из редактора.
      */
     public String getText() {
-        if(mText != null)
+        if (mText != null)
             return mText.toString();
         else
             return "";
     }
 
     public void showToast(String message, boolean isError) {
-        if(isError)
+        if (isError)
             Toasty.error(getContext(), message, Toast.LENGTH_SHORT).show();
         else
             Toasty.success(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+    @Nullable
+    public Language getLanguage() {
+        return mLanguage;
+    }
+
     /**
      * Устанавливаем язык для файла. В будущем сделаю много таких.
+     *
      * @param language - текущий язык. Из него будут браться данные для подсветки синтаксиса
      *                 а так же для автодополнения кода.
      */
     public void setLanguage(@Nullable Language language) {
         mLanguage = language;
-    }
-
-    @Nullable
-    public Language getLanguage() {
-        return mLanguage;
     }
 
     //region METHODS_DOC
@@ -217,12 +227,12 @@ public class Document extends Fragment implements Serializable {
      */
 
     public void setReadOnly(boolean readOnly) {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.setReadOnly(readOnly);
     }
 
     public void setSyntaxHighlight(boolean syntaxHighlight) {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.setSyntaxHighlight(syntaxHighlight);
     }
 
@@ -312,7 +322,7 @@ public class Document extends Fragment implements Serializable {
     public void setText(Editable text, int flag) {
         if (flag == 1) {
             mText = text;
-            if(mEditor != null)
+            if (mEditor != null)
                 mEditor.setText(mText);
             return;
         }
@@ -329,75 +339,75 @@ public class Document extends Fragment implements Serializable {
     //region METHODS
 
     public void insert(@NonNull CharSequence text) {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.insert(text);
     }
 
     public void cut() {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.cut();
         else
             showToast(getString(R.string.editor_not_found), true);
     }
 
     public void copy() {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.copy();
         else
             showToast(getString(R.string.editor_not_found), true);
     }
 
     public void paste() {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.paste();
         else
             showToast(getString(R.string.editor_not_found), true);
     }
 
     public void undo() {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.undo();
         else
             showToast(getString(R.string.editor_not_found), true);
     }
 
     public void redo() {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.redo();
         else
             showToast(getString(R.string.editor_not_found), true);
     }
 
     public void selectAll() {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.selectAll();
         else
             showToast(getString(R.string.editor_not_found), true);
     }
 
     public void selectLine() {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.selectLine();
         else
             showToast(getString(R.string.editor_not_found), true);
     }
 
     public void deleteLine() {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.deleteLine();
         else
             showToast(getString(R.string.editor_not_found), true);
     }
 
     public void duplicateLine() {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.duplicateLine();
         else
             showToast(getString(R.string.editor_not_found), true);
     }
 
     public void find(String what, boolean matchCase, boolean regex, boolean wordOnly) {
-        if(mEditor != null && !what.equals("")) {
+        if (mEditor != null && !what.equals("")) {
             mEditor.find(what, matchCase, regex, wordOnly, mEditor.getEditableText());
             showToast(getString(R.string.done), false);
         } else {
@@ -406,7 +416,7 @@ public class Document extends Fragment implements Serializable {
     }
 
     public void replaceAll(String what, String with) {
-        if(mEditor != null && !what.equals("") && !with.equals("")) {
+        if (mEditor != null && !what.equals("") && !with.equals("")) {
             mEditor.replaceAll(what, with);
             showToast(getString(R.string.done), false);
         } else {
@@ -415,7 +425,7 @@ public class Document extends Fragment implements Serializable {
     }
 
     public void gotoLine(int line) {
-        if(mEditor != null)
+        if (mEditor != null)
             mEditor.gotoLine(line);
         else
             showToast(getString(R.string.editor_not_found), true);

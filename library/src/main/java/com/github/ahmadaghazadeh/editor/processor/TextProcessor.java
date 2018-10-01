@@ -56,7 +56,6 @@ import android.widget.TextView;
 
 
 import com.github.ahmadaghazadeh.editor.R;
-import com.github.ahmadaghazadeh.editor.document.Document;
 import com.github.ahmadaghazadeh.editor.document.commons.LineObject;
 import com.github.ahmadaghazadeh.editor.document.suggestions.SuggestionAdapter;
 import com.github.ahmadaghazadeh.editor.document.suggestions.SuggestionItem;
@@ -73,6 +72,7 @@ import com.github.ahmadaghazadeh.editor.processor.utils.text.LineUtils;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.SymbolsTokenizer;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.TextChange;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.UndoStack;
+import com.github.ahmadaghazadeh.editor.widget.CodeEditor;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     private static final String TAB_STR = "    "; //4 spaces
 
     private Wrapper mWrapper;
-    private Document mDocument;
+    private CodeEditor codeEditor;
     private ClipboardManager mClipboardManager;
     private Context mContext;
 
@@ -174,8 +174,8 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     //region INIT
 
-    public void init(Document document) {
-        mDocument = document;
+    public void init(CodeEditor codeEditor) {
+
         if(!isInEditMode()) {
             initParameters();
             initTheme();
@@ -192,13 +192,16 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         mLineUtils = new LineUtils();
     }
 
+    public void SetTheme(){
+
+    }
+
     /**
      * Загрузка темы. Все основные Paint'ы и прочие элементы, которые зависят от темы.
      */
     protected void initTheme() {
         TypedValue colorAttr;
 
-        //region Paints
 
         mLineNumberPaint = new StylePaint(true, false);
         colorAttr = new TypedValue();
@@ -378,7 +381,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     private void updateDocumentOnTextChanged(CharSequence s, int start, int count) {
         mOnTextChangedNewText = s.subSequence(start, start + count).toString();
-        mDocument.replaceText(mOnTextChangedChangeStart, mOnTextChangedChangeEnd, mOnTextChangedNewText);
+        codeEditor.replaceText(mOnTextChangedChangeStart, mOnTextChangedChangeEnd, mOnTextChangedNewText);
     }
 
     private void updateUndoRedoOnTextChanged(CharSequence s, int start, int count) {
@@ -456,9 +459,9 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 case KeyEvent.KEYCODE_D: // CTRL+D - Duplicate Line
                     duplicateLine();
                     return true;
-                case KeyEvent.KEYCODE_S: // CTRL+S - Save File
-                    mDocument.saveFile();
-                    return true;
+//                case KeyEvent.KEYCODE_S: // CTRL+S - Save File
+//                    codeEditor.saveFile();
+//                    return true;
                 default:
                     return super.onKeyDown(keyCode, event);
             }
@@ -532,7 +535,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     private String[] executeIndentation(int start) {
-        if(mDocument != null) {
+        if(codeEditor != null) {
             String[] strArr;
             if(mNewText.equals("\n") && mIndentLine) {
                 String prevLineIndentation = getIndentationForOffset(start);
@@ -590,11 +593,11 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     public String getIndentationForOffset(int offset) {
-        return getIndentationForLine(mDocument.getLinesCollection().getLineForIndex(offset));
+        return getIndentationForLine(codeEditor.getLinesCollection().getLineForIndex(offset));
     }
 
     public String getIndentationForLine(int line) {
-        LineObject l = mDocument.getLinesCollection().getLine(line);
+        LineObject l = codeEditor.getLinesCollection().getLine(line);
         if (l == null) {
             return "";
         }
@@ -624,9 +627,9 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     protected void loadSuggestions() {
-        if(mDocument.getLanguage() != null) {
+        if(codeEditor.getLanguage() != null) {
             ArrayList<SuggestionItem> data = new ArrayList<>();
-            for (String name : mDocument.getLanguage().getAllCompletions()) {
+            for (String name : codeEditor.getLanguage().getAllCompletions()) {
                 data.add(new SuggestionItem(SuggestionType.TYPE_KEYWORD, name)); //Keyword
             }
             setSuggestData(data);
@@ -805,11 +808,11 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         if (!isInEditMode()) {
             int top;
             Layout layout = getLayout();
-            if (layout != null && mDocument != null && mHighlightCurrentLine) {
-                int currentLineStart = mDocument.getLineForIndex(getSelectionStart());
-                if (currentLineStart == mDocument.getLineForIndex(getSelectionEnd())) {
-                    int selectedLineStartIndex = mDocument.getIndexForStartOfLine(currentLineStart);
-                    int selectedLineEndIndex = mDocument.getIndexForEndOfLine(currentLineStart);
+            if (layout != null && codeEditor != null && mHighlightCurrentLine) {
+                int currentLineStart = codeEditor.getLineForIndex(getSelectionStart());
+                if (currentLineStart == codeEditor.getLineForIndex(getSelectionEnd())) {
+                    int selectedLineStartIndex = codeEditor.getIndexForStartOfLine(currentLineStart);
+                    int selectedLineEndIndex = codeEditor.getIndexForEndOfLine(currentLineStart);
                     int topVisualLine = layout.getLineForOffset(selectedLineStartIndex);
                     int bottomVisualLine = layout.getLineForOffset(selectedLineEndIndex);
                     int left = mGutterWidth;
@@ -830,7 +833,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 int paddingTop = getPaddingTop();
                 int max = mLineUtils.getBottomVisibleLine(this);
                 int textRight = (mGutterWidth - mIdealMargin / 2) + getScrollX();
-                if (mDocument != null) {
+                if (codeEditor != null) {
                     int i = mLineUtils.getTopVisibleLine(this);
                     if (i >= 2) {
                         i -= 2;
@@ -838,7 +841,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                         i = 0;
                     }
                     while (i <= max) {
-                        int number = mDocument.getLineForIndex(getLayout().getLineStart(i));
+                        int number = codeEditor.getLineForIndex(getLayout().getLineStart(i));
                         if (number != prevLineNumber) {
                             canvas.drawText(Integer.toString(number + 1), textRight,
                                     layout.getLineBaseline(i) + paddingTop, mLineNumberPaint);
@@ -859,10 +862,10 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
      */
     public void updateGutter() {
         int max = 3;
-        if(mShowLineNumbers && mDocument != null && getLayout() != null) {
+        if(mShowLineNumbers && codeEditor != null && getLayout() != null) {
             TextPaint paint = getLayout().getPaint();
             if(paint != null) {
-                mLineNumberDigitCount = Integer.toString(mDocument.getLineCount()).length();
+                mLineNumberDigitCount = Integer.toString(codeEditor.getLineCount()).length();
                 int widestNumber = 0;
                 float widestWidth = 0.0f;
                 for (int i = 0; i <= 9; i++) {
@@ -938,7 +941,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     @WorkerThread
     protected void syntaxHighlight(Layout layout, Editable editable,
                                    int lineHeight, int lineCount, int scrollY, int height) {
-        if (mSyntaxHighlight && layout != null) {
+         if (mSyntaxHighlight && layout != null) {
             int topLine = (scrollY / lineHeight) - 10;
             int bottomLine = (((scrollY + height) / lineHeight) + 1) + 10;
             if (topLine < 0) {
@@ -964,8 +967,8 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
                 //region PROCESS_HIGHLIGHT
 
-                if(mDocument.getLanguage() != null) {
-                    Matcher m = mDocument.getLanguage().getSyntaxNumbers().matcher( //Numbers
+                if(codeEditor.getLanguage() != null) {
+                    Matcher m = codeEditor.getLanguage().getSyntaxNumbers().matcher( //Numbers
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         editable.setSpan(
@@ -976,7 +979,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = mDocument.getLanguage().getSyntaxSymbols().matcher( //Symbols
+                    m = codeEditor.getLanguage().getSyntaxSymbols().matcher( //Symbols
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         editable.setSpan(
@@ -987,7 +990,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = mDocument.getLanguage().getSyntaxBrackets().matcher( //Brackets
+                    m = codeEditor.getLanguage().getSyntaxBrackets().matcher( //Brackets
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         editable.setSpan(
@@ -998,7 +1001,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = mDocument.getLanguage().getSyntaxKeywords().matcher( //Keywords
+                    m = codeEditor.getLanguage().getSyntaxKeywords().matcher( //Keywords
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         editable.setSpan(
@@ -1009,7 +1012,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = mDocument.getLanguage().getSyntaxMethods().matcher( //Methods
+                    m = codeEditor.getLanguage().getSyntaxMethods().matcher( //Methods
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         editable.setSpan(
@@ -1020,7 +1023,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = mDocument.getLanguage().getSyntaxStrings().matcher( //Strings
+                    m = codeEditor.getLanguage().getSyntaxStrings().matcher( //Strings
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         for (ForegroundColorSpan span : editable.getSpans(
@@ -1036,7 +1039,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = mDocument.getLanguage().getSyntaxComments().matcher( //Comments
+                    m = codeEditor.getLanguage().getSyntaxComments().matcher( //Comments
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         boolean skip = false;
@@ -1090,12 +1093,12 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     protected void checkMatchingBracket(int pos) {
         getText().removeSpan(mOpenBracketSpan);
         getText().removeSpan(mClosedBracketSpan);
-        if(mBracketMatching && mDocument.getLanguage() != null) {
+        if(mBracketMatching && codeEditor.getLanguage() != null) {
             if (pos > 0 && pos <= getText().length()) {
                 char c1 = getText().charAt(pos - 1);
-                for (int i = 0; i < mDocument.getLanguage().getLanguageBrackets().length; i++) {
-                    if (mDocument.getLanguage().getLanguageBrackets()[i] == c1) {
-                        char c2 = mDocument.getLanguage().getLanguageBrackets()[(i + 3) % 6];
+                for (int i = 0; i < codeEditor.getLanguage().getLanguageBrackets().length; i++) {
+                    if (codeEditor.getLanguage().getLanguageBrackets()[i] == c1) {
+                        char c2 = codeEditor.getLanguage().getLanguageBrackets()[(i + 3) % 6];
                         boolean open = false;
                         if (i <= 2) {
                             open = true;
@@ -1357,7 +1360,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     public void cut() {
         Editable selectedText = getSelectedText();
         if(selectedText == null || selectedText.toString().equals("")) {
-            mDocument.showToast(mContext.getString(R.string.nothing_to_cut), true);
+            codeEditor.showToast(mContext.getString(R.string.nothing_to_cut), true);
             Logger.debug(TAG, mContext.getString(R.string.nothing_to_cut));
         } else {
             mClipboardManager.setPrimaryClip(ClipData.newPlainText("CuttedText", selectedText));
@@ -1372,7 +1375,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     public void copy() {
         Editable selectedText = getSelectedText();
         if (selectedText == null || selectedText.toString().equals("")) {
-            mDocument.showToast(mContext.getString(R.string.nothing_to_copy), true);
+            codeEditor.showToast(mContext.getString(R.string.nothing_to_copy), true);
             Logger.debug(TAG, mContext.getString(R.string.nothing_to_copy));
         } else {
             mClipboardManager.setPrimaryClip(ClipData.newPlainText("CopiedText", selectedText));
@@ -1382,7 +1385,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     public void paste() {
         if (mClipboardManager.getPrimaryClip() == null ||
                 mClipboardManager.getPrimaryClip().toString().equals("")) {
-            mDocument.showToast(getContext().getString(R.string.nothing_to_paste), true);
+            codeEditor.showToast(getContext().getString(R.string.nothing_to_paste), true);
             Logger.debug(TAG, getContext().getString(R.string.nothing_to_paste));
         }
         if (!mClipboardManager.hasPrimaryClip()) {
@@ -1449,7 +1452,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         TextChange textChange = mUndoStack.pop();
         if (textChange == null) {
             Logger.debug(TAG, mContext.getString(R.string.nothing_to_undo));
-            mDocument.showToast(mContext.getString(R.string.nothing_to_undo), true);
+            codeEditor.showToast(mContext.getString(R.string.nothing_to_undo), true);
         } else if (textChange.start >= 0) {
             isDoingUndoRedo = true;
             if (textChange.start < 0) {
@@ -1479,7 +1482,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         TextChange textChange = mRedoStack.pop();
         if (textChange == null) {
             Logger.debug(TAG, mContext.getString(R.string.nothing_to_redo));
-            mDocument.showToast(mContext.getString(R.string.nothing_to_redo), true);
+            codeEditor.showToast(mContext.getString(R.string.nothing_to_redo), true);
         } else if (textChange.start >= 0) {
             isDoingUndoRedo = true;
             getText().replace(textChange.start,
@@ -1496,11 +1499,11 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     public void gotoLine(int toLine) {
         int realLine = toLine - 1;
         if(realLine == -1) {
-            mDocument.showToast(mContext.getString(R.string.gotoLine_above_than_0), true);
-        } else if(realLine < mDocument.getLineCount()) {
-            setSelection(mDocument.getIndexForStartOfLine(realLine));
+            codeEditor.showToast(mContext.getString(R.string.gotoLine_above_than_0), true);
+        } else if(realLine < codeEditor.getLineCount()) {
+            setSelection(codeEditor.getIndexForStartOfLine(realLine));
         } else {
-            mDocument.showToast(mContext.getString(R.string.gotoLine_not_exists), true);
+            codeEditor.showToast(mContext.getString(R.string.gotoLine_not_exists), true);
         }
     }
 

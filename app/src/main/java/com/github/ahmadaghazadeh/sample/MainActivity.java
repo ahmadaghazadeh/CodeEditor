@@ -13,10 +13,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        Document doc=new Document();
-        transaction.replace(R.id.fragment, doc);
-        transaction.addToBackStack(doc.getClass().getName());
-        transaction.commit();
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        Document doc=Document.newInstance("");
+//        transaction.replace(R.id.fragment, doc);
+//        transaction.addToBackStack(doc.getClass().getName());
+//        transaction.commit();
     }
 }

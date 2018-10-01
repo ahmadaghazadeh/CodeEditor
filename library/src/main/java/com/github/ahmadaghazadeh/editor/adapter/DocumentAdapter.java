@@ -41,9 +41,9 @@ public class DocumentAdapter extends ArrayPagerAdapter<Document> {
     @Override
     protected Document createFragment(@Nullable PageDescriptor desc) {
         if(desc.getFragmentTag().equals("") && desc.getTitle().equals("Start Page")) {
-            return(Document.newInstance("Start Page", true)); //Создание стартовой страницы
+            return(Document.newInstance("Start Page")); //Создание стартовой страницы
         } else { //иначе, это создание нормального файла
-            return(Document.newInstance(desc.getFragmentTag(), false));
+            return(Document.newInstance(desc.getFragmentTag()));
         }
     }
 

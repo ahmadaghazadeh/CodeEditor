@@ -38,8 +38,7 @@ public class SyntaxHighlightSpan extends CharacterStyle
     public int end;
     public int start;
 
-    public SyntaxHighlightSpan(StyleSpan span, int start, int end) {
-        this.color = span.getColor();
+    public SyntaxHighlightSpan(StyleSpan span, int start, int end) { this.color = span.getColor();
         this.bold = span.getIsBold();
         this.italics = span.getIsItalic();
         this.start = start;
