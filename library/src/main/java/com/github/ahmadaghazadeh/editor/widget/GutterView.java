@@ -46,6 +46,12 @@ public class GutterView extends View implements OnScrollChangedListener {
             initLineNumbers();
     }
 
+    public GutterView(Context context) {
+        super(context);
+        if (!isInEditMode())
+            initLineNumbers();
+    }
+
     public void initLineNumbers() {
         mTextPaint = new StylePaint(true, false);
         mTextPaint.setTextSize(getResources().getDisplayMetrics().density * 11.0f);

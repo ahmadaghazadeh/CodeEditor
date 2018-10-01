@@ -18,8 +18,6 @@
  */
 
 package com.github.ahmadaghazadeh.editor.processor.language;
-
-
 import com.github.ahmadaghazadeh.editor.processor.utils.text.ArrayUtils;
 
 import java.util.regex.Pattern;

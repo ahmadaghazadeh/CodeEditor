@@ -176,6 +176,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     public void init(CodeEditor codeEditor) {
 
+        this.codeEditor=codeEditor;
         if(!isInEditMode()) {
             initParameters();
             initTheme();

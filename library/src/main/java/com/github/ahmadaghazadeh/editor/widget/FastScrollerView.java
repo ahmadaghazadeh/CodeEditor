@@ -70,6 +70,25 @@ public class FastScrollerView extends View implements OnScrollChangedListener {
         }
     }
 
+    public FastScrollerView(Context context) {
+        super(context);
+        if(!isInEditMode()) {
+            mThumbDrawableNormal = context.getResources().getDrawable(R.drawable.fastscroll_thumb_default);
+            mThumbDrawableDragging = context.getResources().getDrawable(R.drawable.fastscroll_thumb_pressed);
+
+            TypedValue colorAccent = new TypedValue();
+            getContext().getTheme()
+                    .resolveAttribute(R.attr.colorAccent, colorAccent, true);
+
+            mThumbDrawableNormal.mutate().setColorFilter(colorAccent.data, PorterDuff.Mode.SRC_IN);
+            mThumbDrawableDragging.mutate().setColorFilter(colorAccent.data, PorterDuff.Mode.SRC_IN);
+            mThumbHeight = mThumbDrawableNormal.getIntrinsicHeight();
+
+            mPaint = new StylePaint(true, false);
+            mPaint.setAlpha(250);
+        }
+    }
+
     public FastScrollerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if(!isInEditMode()) {

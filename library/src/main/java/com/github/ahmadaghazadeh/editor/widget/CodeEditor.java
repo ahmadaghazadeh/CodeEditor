@@ -1,14 +1,18 @@
 package com.github.ahmadaghazadeh.editor.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.WorkerThread;
 import android.text.Editable;
+import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.github.ahmadaghazadeh.editor.R;
@@ -23,6 +27,7 @@ import com.github.ahmadaghazadeh.editor.processor.utils.ITextProcessorSetting;
 import java.io.Serializable;
 
 public class CodeEditor extends RelativeLayout implements Serializable {
+    RelativeLayout rootView;
     private Context context;
     private TextProcessor editor;
     private Language language;
@@ -55,30 +60,64 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
     private void init(Context context, AttributeSet attrs) {
         this.context = context;
+        context.setTheme(R.style.Theme_Darcula);
         initEditor();
         String code = "";
         String lang = "js";
         if (attrs != null) {
 
         }
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        if (inflater != null) {
-            inflater.inflate(R.layout.view_code_editor, this, true);
-            editor = findViewById(R.id.editor);
-            editor.init(this);
-            final FastScrollerView mFastScrollerView = findViewById(R.id.fast_scroller);
-            mFastScrollerView.link(editor); //подключаем FastScroller к редактору
-            final GutterView mGutterView = findViewById(R.id.gutter);
-            mGutterView.link(editor, lineNumbers); //подключаем Gutter к редактору
-            LinesCollection lines = new LinesCollection();
-            lines.add(0, 0);
-            setLanguage(LanguageProvider.getLanguage(lang)); //ставим язык
-            setText(code, 1); //заполняем поле текстом
-            setLineStartsList(lines); //подгружаем линии
-            refreshEditor(); //подключаем все настройки
-            editor.enableUndoRedoStack();
+        rootView=new RelativeLayout(context);
+        GutterView gutterView=new GutterView(context);
+        RelativeLayout.LayoutParams paramsGutter = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+        paramsGutter.alignWithParent=true;
+        gutterView.setLayoutParams(paramsGutter);
+        rootView.addView(gutterView);
+
+
+        editor=new TextProcessor(context);
+        RelativeLayout.LayoutParams paramsTxtprocessor = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        editor.setLayoutParams(paramsTxtprocessor);
+        editor.setScrollBarStyle(SCROLLBARS_OUTSIDE_INSET);
+        editor.setGravity(Gravity.TOP|Gravity.START);
+        TypedArray a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
+        try {
+            int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocBackground, /*default color*/ 0);
+            editor.setBackgroundColor(colorResource );
+        } finally {
+            a.recycle();
         }
+
+        a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
+        try {
+            int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocText, /*default color*/ 0);
+            editor.setTextColor(colorResource );
+        } finally {
+            a.recycle();
+        }
+
+
+        editor.setLayerType(LAYER_TYPE_SOFTWARE,new TextPaint());
+        rootView.addView(editor);
+
+        editor.init(this);
+
+        FastScrollerView mFastScrollerView = new FastScrollerView(context);
+        RelativeLayout.LayoutParams fastParam = new RelativeLayout.LayoutParams(30, LayoutParams.MATCH_PARENT);
+        mFastScrollerView.setLayoutParams(fastParam);
+        rootView.addView(mFastScrollerView);
+        mFastScrollerView.link(editor); //подключаем FastScroller к редактору
+
+        gutterView.link(editor, lineNumbers); //подключаем Gutter к редактору
+        LinesCollection lines = new LinesCollection();
+        lines.add(0, 0);
+        setLanguage(LanguageProvider.getLanguage(lang)); //ставим язык
+        setText(code, 1); //заполняем поле текстом
+        setLineStartsList(lines); //подгружаем линии
+        refreshEditor(); //подключаем все настройки
+        editor.enableUndoRedoStack();
+        addView(rootView);
+
     }
 
 

@@ -11,15 +11,17 @@
     <com.github.ahmadaghazadeh.editor.processor.TextProcessor
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbarStyle="insideInset"
-        android:layerType="software"
-        android:id="@+id/editor"
-        android:textColor="?attr/colorDocText"
-        android:background="?attr/colorDocBackground"
-        android:popupBackground="?attr/colorDropDown"
-        android:bufferType="spannable"
-        android:gravity="top|start"
+    android:scrollbarStyle="insideInset"
+    android:layerType="software"
+    android:id="@+id/editor"
+    android:textColor="?attr/colorDocText"
+    android:background="?attr/colorDocBackground"
+    android:popupBackground="?attr/colorDropDown"
+    android:bufferType="spannable"
+    android:gravity="top|start"
         />
+
+
 
     <com.github.ahmadaghazadeh.editor.widget.FastScrollerView
         android:layout_width="@dimen/fastscroller_width"

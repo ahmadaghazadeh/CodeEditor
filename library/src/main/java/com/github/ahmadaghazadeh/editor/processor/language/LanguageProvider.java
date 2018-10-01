@@ -20,11 +20,9 @@
 package com.github.ahmadaghazadeh.editor.processor.language;
 
 
-import com.github.ahmadaghazadeh.editor.document.commons.FileObject;
 
 public class LanguageProvider {
 
- 
     public static Language getLanguage(String lang) {
         if(lang.equals("js")) { //Если это JavaScript (ModPE Script)
             return new JSLanguage(); //ставим соответствующий язык
