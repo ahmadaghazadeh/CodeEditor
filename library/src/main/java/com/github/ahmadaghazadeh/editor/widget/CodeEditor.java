@@ -62,8 +62,17 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         this.context = context;
         context.setTheme(R.style.Theme_Darcula);
         initEditor();
-        String code = "";
-        String lang = "js";
+        String code = "<ul>\n" +
+                "  <li>Coffee</li>\n" +
+                "  <li>Tea\n" +
+                "    <ul>\n" +
+                "      <li>Black tea</li>\n" +
+                "      <li>Green tea</li>\n" +
+                "    </ul>\n" +
+                "  </li>\n" +
+                "  <li>Milk</li>\n" +
+                "</ul>";
+        String lang = "html";
         if (attrs != null) {
 
         }

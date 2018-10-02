@@ -20,12 +20,13 @@
 package com.github.ahmadaghazadeh.editor.processor.language;
 
 
-
 public class LanguageProvider {
 
     public static Language getLanguage(String lang) {
-        if(lang.equals("js")) { //Если это JavaScript (ModPE Script)
+        if (lang.equals("js")) { //Если это JavaScript (ModPE Script)
             return new JSLanguage(); //ставим соответствующий язык
+        } else if (lang.equals("html")) { //Если это JavaScript (ModPE Script)
+            return new HtmlLanguage(); //ставим соответствующий язык
         } else {
             return null; //иначе, не загружаем язык в редактор (отключаются
             // дополнения кода и подсветка синтаксиса)
