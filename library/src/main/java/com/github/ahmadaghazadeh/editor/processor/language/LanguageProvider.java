@@ -23,13 +23,14 @@ package com.github.ahmadaghazadeh.editor.processor.language;
 public class LanguageProvider {
 
     public static Language getLanguage(String lang) {
-        if (lang.equals("js")) { //Если это JavaScript (ModPE Script)
-            return new JSLanguage(); //ставим соответствующий язык
-        } else if (lang.equals("html")) { //Если это JavaScript (ModPE Script)
-            return new HtmlLanguage(); //ставим соответствующий язык
+        if (lang.toLowerCase().equals("js") || lang.toLowerCase().equals("javascript")) {
+            return new JSLanguage();
+        } else if (lang.toLowerCase().equals("html")) {
+            return new HtmlLanguage();
+        }else if (lang.toLowerCase().equals("css")) {
+            return new CSSLanguage();
         } else {
-            return null; //иначе, не загружаем язык в редактор (отключаются
-            // дополнения кода и подсветка синтаксиса)
+            return new JSLanguage();
         }
     }
 }

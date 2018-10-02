@@ -62,19 +62,14 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         this.context = context;
         context.setTheme(R.style.Theme_Darcula);
         initEditor();
-        String code = "<ul>\n" +
-                "  <li>Coffee</li>\n" +
-                "  <li>Tea\n" +
-                "    <ul>\n" +
-                "      <li>Black tea</li>\n" +
-                "      <li>Green tea</li>\n" +
-                "    </ul>\n" +
-                "  </li>\n" +
-                "  <li>Milk</li>\n" +
-                "</ul>";
+        String code = "";
         String lang = "html";
         if (attrs != null) {
-
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CodeEditor, 0, 0);
+            code= a.getString(R.styleable.CodeEditor_code);
+            lang= a.getString(R.styleable.CodeEditor_langName);
+            if (lang == null || lang.isEmpty()) lang = "html";
+            a.recycle();
         }
         rootView=new RelativeLayout(context);
         GutterView gutterView=new GutterView(context);

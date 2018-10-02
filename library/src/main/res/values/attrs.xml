@@ -19,6 +19,16 @@
   -->
 
 <resources>
+
+    <attr name="code" format="string" />
+
+    <attr name="langName" format="string|enum"/>
+
+    <declare-styleable name="CodeEditor">
+        <attr name="code" />
+        <attr name="langName"  />
+    </declare-styleable>
+
     <declare-styleable name="ThemeAttributes">
         <!-- Интерфейс -->
         <attr name="colorTabs" format="color"/>

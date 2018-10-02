@@ -669,6 +669,10 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         try {
             Layout layout = getLayout();
             if (layout != null) {
+
+                //
+                //https://stackoverflow.com/questions/3654321/measuring-text-height-to-be-drawn-on-canvas-android
+                // paint.getTextBounds() 
                 int pos = getSelectionStart();
                 int line = layout.getLineForOffset(pos);
                 int baseline = layout.getLineBaseline(line);

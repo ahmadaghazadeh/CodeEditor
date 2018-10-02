@@ -1,32 +1,30 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <com.github.ahmadaghazadeh.editor.widget.GutterView
+        android:id="@+id/gutter"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:id="@+id/gutter"/>
+        android:layout_alignParentLeft="true" />
 
     <com.github.ahmadaghazadeh.editor.processor.TextProcessor
+        android:id="@+id/editor"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-    android:scrollbarStyle="insideInset"
-    android:layerType="software"
-    android:id="@+id/editor"
-    android:textColor="?attr/colorDocText"
-    android:background="?attr/colorDocBackground"
-    android:popupBackground="?attr/colorDropDown"
-    android:bufferType="spannable"
-    android:gravity="top|start"
-        />
-
+        android:background="?attr/colorDocBackground"
+        android:bufferType="spannable"
+        android:gravity="top|start"
+        android:layerType="software"
+        android:popupBackground="?attr/colorDropDown"
+        android:scrollbarStyle="insideInset"
+        android:textColor="?attr/colorDocText" />
 
 
     <com.github.ahmadaghazadeh.editor.widget.FastScrollerView
+        android:id="@+id/fast_scroller"
         android:layout_width="@dimen/fastscroller_width"
         android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:id="@+id/fast_scroller"/>
+        android:layout_alignParentRight="true" />
 
 </RelativeLayout>
