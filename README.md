@@ -38,7 +38,7 @@ dependencies {
 ```xml
 ...
   <com.github.ahmadaghazadeh.editor.widget.CodeEditor
-        app:code="@string/save_file_success"
+        app:code="@string/code"
         app:langName="Css"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

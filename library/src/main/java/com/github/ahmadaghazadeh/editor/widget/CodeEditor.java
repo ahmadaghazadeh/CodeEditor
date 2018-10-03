@@ -420,4 +420,13 @@ public class CodeEditor extends RelativeLayout implements Serializable {
     public void showToast(String string, boolean b) {
 
     }
+
+//    @BindingAdapter(value = {"code", "lang"})
+//    public static void setCodeView(CodeEditor view, String code, String lang) {
+//        if (code != null && view != null ) {
+//            view.setText(code,1);
+//            view.setLanguage(LanguageProvider.getLanguage(lang));
+//        }
+//    }
+
 }

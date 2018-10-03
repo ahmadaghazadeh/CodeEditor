@@ -1,34 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".view.main.MainActivity">
 
+    <data>
 
-    <com.github.ahmadaghazadeh.editor.widget.CodeEditor
-        app:code="@string/save_file_success"
-        app:langName="Css"
+        <variable
+            name="viewModel"
+            type="com.github.ahmadaghazadeh.sample.CodeModel" />
+
+    </data>
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <!--<com.github.ahmadaghazadeh.editor.processor.TextProcessor-->
-        <!--android:id="@+id/textProcessor"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--app:layout_constraintBottom_toTopOf="@+id/extendedKeyboard"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-    <!--<com.github.ahmadaghazadeh.editor.keyboard.ExtendedKeyboard-->
-        <!--android:id="@+id/extendedKeyboard"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent" />-->
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
 
 
+        <com.github.ahmadaghazadeh.editor.widget.CodeEditor
+            app:code="@{viewModel.code}"
+            app:langName="@{viewModel.lang}"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
-</android.support.constraint.ConstraintLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>
+
+
