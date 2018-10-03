@@ -35,7 +35,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     // ViewModel and LiveData - work with save viewModel  state
     implementation "android.arch.lifecycle:extensions:1.1.1"
-    implementation "android.arch.lifecycle:compiler:1.1.1"
+    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
 
    // implementation 'com.github.ahmadaghazadeh:CodeEditor:1.0.0'
     testImplementation 'junit:junit:4.12'
