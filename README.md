@@ -37,10 +37,11 @@ dependencies {
 #### XML
 ```xml
 ...
-<com.susmit.aceeditor.AceEditor
+  <com.github.ahmadaghazadeh.editor.widget.CodeEditor
+        app:code="@string/save_file_success"
+        app:langName="Css"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/editor"/>
+        android:layout_height="match_parent"/>
 ...
 ```
 
@@ -54,29 +55,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         editor = findViewById(R.id.editor);
-        
-        //call this to set up themes or modes at time of creation of view.
-        //If you are setting the theme or mode through another view's action,
-        //call setTheme and/or setMode directly
-        editor.setOnLoadedEditorListener(new OnLoadedEditorListener() {
-            @Override
-            public void onCreate() {
-                editor.setTheme(AceEditor.Theme.TERMINAL);
-                editor.setMode(AceEditor.Mode.C_Cpp);
-            }
-        });
-        
-        //Since a WebView is used for the content, you need to set the following listener to process the text
-        //It is also used to retrive other values, such as selected text or number of lines
-        editor.setResultReceivedListener(new ResultReceivedListener() {
-            @Override
-            public void onReceived(String text, int FLAG_VALUE) {
-                if(FLAG_VALUE == AceEditor.Request.VALUE_TEXT)
-                {
-                    Toast.makeText(MainActivity.this, "Typed text:\n\n" + text, Toast.LENGTH_SHORT).show();
-                }
-            }
-        }); 
+         
     }
 }
 ```
