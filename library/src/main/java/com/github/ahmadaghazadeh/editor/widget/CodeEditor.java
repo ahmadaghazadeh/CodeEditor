@@ -11,12 +11,11 @@ import android.text.Editable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.github.ahmadaghazadeh.editor.R;
 import com.github.ahmadaghazadeh.editor.document.commons.LinesCollection;
+import com.github.ahmadaghazadeh.editor.keyboard.ExtendedKeyboard;
 import com.github.ahmadaghazadeh.editor.processor.TextNotFoundException;
 import com.github.ahmadaghazadeh.editor.processor.TextProcessor;
 import com.github.ahmadaghazadeh.editor.processor.language.Language;
@@ -65,29 +64,30 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         String code = "";
         String lang = "html";
         if (attrs != null) {
-            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CodeEditor, 0, 0);
-            code= a.getString(R.styleable.CodeEditor_code);
-            lang= a.getString(R.styleable.CodeEditor_langName);
-            if (lang == null || lang.isEmpty()) lang = "html";
-            a.recycle();
+
         }
-        rootView=new RelativeLayout(context);
-        GutterView gutterView=new GutterView(context);
+        RelativeLayout.LayoutParams rootViewParam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+        rootView = new RelativeLayout(context);
+        rootView.setLayoutParams(rootViewParam);
+        GutterView gutterView = new GutterView(context);
+        gutterView.setId(R.id.gutterView);
         RelativeLayout.LayoutParams paramsGutter = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-        paramsGutter.alignWithParent=true;
+        paramsGutter.alignWithParent = true;
         gutterView.setLayoutParams(paramsGutter);
         rootView.addView(gutterView);
 
 
-        editor=new TextProcessor(context);
-        RelativeLayout.LayoutParams paramsTxtprocessor = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        editor = new TextProcessor(context);
+        editor.setId(R.id.editor);
+        RelativeLayout.LayoutParams paramsTxtprocessor = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         editor.setLayoutParams(paramsTxtprocessor);
         editor.setScrollBarStyle(SCROLLBARS_OUTSIDE_INSET);
-        editor.setGravity(Gravity.TOP|Gravity.START);
+        editor.setGravity(Gravity.TOP | Gravity.START);
         TypedArray a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
         try {
             int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocBackground, /*default color*/ 0);
-            editor.setBackgroundColor(colorResource );
+            editor.setBackgroundColor(colorResource);
         } finally {
             a.recycle();
         }
@@ -95,19 +95,19 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
         try {
             int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocText, /*default color*/ 0);
-            editor.setTextColor(colorResource );
+            editor.setTextColor(colorResource);
         } finally {
             a.recycle();
         }
-
-
-        editor.setLayerType(LAYER_TYPE_SOFTWARE,new TextPaint());
+        editor.setLayerType(LAYER_TYPE_SOFTWARE, new TextPaint());
         rootView.addView(editor);
 
         editor.init(this);
 
         FastScrollerView mFastScrollerView = new FastScrollerView(context);
+        mFastScrollerView.setId(R.id.fastScrollerView);
         RelativeLayout.LayoutParams fastParam = new RelativeLayout.LayoutParams(30, LayoutParams.MATCH_PARENT);
+        fastParam.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, TRUE);
         mFastScrollerView.setLayoutParams(fastParam);
         rootView.addView(mFastScrollerView);
         mFastScrollerView.link(editor); //подключаем FastScroller к редактору
@@ -120,7 +120,37 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         setLineStartsList(lines); //подгружаем линии
         refreshEditor(); //подключаем все настройки
         editor.enableUndoRedoStack();
+
+
+        ExtendedKeyboard recyclerView = new ExtendedKeyboard(context);
+        recyclerView.setId(R.id.recyclerView);
+        RelativeLayout.LayoutParams recyclerViewParam = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 40);
+
+
+        // paramsTxtprocessor.addRule(RelativeLayout.ALIGN_PARENT_TOP,TRUE);
+        // paramsTxtprocessor.addRule(RelativeLayout.ABOVE,recyclerView.getId());
+
+        //recyclerViewParam.addRule(RelativeLayout.ALIGN_PARENT_START,TRUE);
+        recyclerViewParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, TRUE);
+        recyclerView.setPadding(45, 0, 0, 0);
+        recyclerView.setLayoutParams(recyclerViewParam);
+        rootView.addView(recyclerView);
         addView(rootView);
+        recyclerView.setListener((view, symbol) -> {
+                    if (symbol.getShowText().endsWith("End")) {
+                        String text = editor.getText().toString();
+                        int x = text.indexOf("\n", editor.getSelectionStart());
+                        if (x == -1) {
+                            x = text.length();
+                        }
+                        editor.setSelection(x);
+
+                    } else {
+                        editor.getText().insert(editor.getSelectionStart(), symbol.getWriteText());
+                    }
+
+                }
+        );
 
     }
 

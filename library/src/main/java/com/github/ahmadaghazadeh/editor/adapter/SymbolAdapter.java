@@ -28,13 +28,15 @@ import android.widget.TextView;
 import com.github.ahmadaghazadeh.editor.R;
 import com.github.ahmadaghazadeh.editor.keyboard.ExtendedKeyboard;
 
+import java.util.List;
+
 
 /**
  * @author Trần Lê Duy
  */
 public class SymbolAdapter extends RecyclerView.Adapter<SymbolAdapter.ViewHolder> {
 
-    private String[] mList;
+    private List<Symbol> mList;
     private ExtendedKeyboard.OnKeyListener mListener;
 
     @Override
@@ -46,21 +48,22 @@ public class SymbolAdapter extends RecyclerView.Adapter<SymbolAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.text.setText(mList[position]);
+       final Symbol symbol=mList.get(position);
+        holder.text.setText(symbol.getShowText());
         holder.text.setOnClickListener(v -> {
             if (mListener != null)
-                mListener.onKeyClick(v,((TextView) v).getText().toString());
+                mListener.onKeyClick(v,symbol);
         });
     }
 
     @Override
     public int getItemCount() {
-        return mList.length;
+        return mList.size();
     }
 
 
-    public void setListKey(String[] list) {
-        mList = list;
+    public void setListKey(List<Symbol> mList) {
+       this. mList = mList;
     }
 
     public void setListener(ExtendedKeyboard.OnKeyListener listener) {

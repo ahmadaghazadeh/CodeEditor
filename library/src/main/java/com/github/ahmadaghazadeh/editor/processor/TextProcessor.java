@@ -54,7 +54,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Scroller;
 import android.widget.TextView;
 
-
 import com.github.ahmadaghazadeh.editor.R;
 import com.github.ahmadaghazadeh.editor.document.commons.LineObject;
 import com.github.ahmadaghazadeh.editor.document.suggestions.SuggestionAdapter;
@@ -176,8 +175,8 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     public void init(CodeEditor codeEditor) {
 
-        this.codeEditor=codeEditor;
-        if(!isInEditMode()) {
+        this.codeEditor = codeEditor;
+        if (!isInEditMode()) {
             initParameters();
             initTheme();
             initMethods();
@@ -193,7 +192,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         mLineUtils = new LineUtils();
     }
 
-    public void SetTheme(){
+    public void SetTheme() {
 
     }
 
@@ -312,7 +311,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     @Override
     public void setTextSize(float textSize) {
         super.setTextSize(textSize);
-        if(mLineNumberPaint != null) {
+        if (mLineNumberPaint != null) {
             mLineNumberPaint.setTextSize(getTextSize());
         }
     }
@@ -337,7 +336,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
             int y = getScrollY();
             l.onScrollChanged(x, y, x, y);
         }
-        if(mAutoComplete) //Suggestions
+        if (mAutoComplete) //Suggestions
             onDropDownChangeSize(w, h);
     }
 
@@ -361,7 +360,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
             updateUndoRedoOnTextChanged(s, start, count);
             mOldText = "";
             mNewText = "";
-            if(mAutoComplete)
+            if (mAutoComplete)
                 onPopupChangePosition();
         }
 
@@ -387,9 +386,9 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     private void updateUndoRedoOnTextChanged(CharSequence s, int start, int count) {
         if (!isDoingUndoRedo && mUpdateLastChange != null) {
-            if(count < UndoStack.MAX_SIZE) {
+            if (count < UndoStack.MAX_SIZE) {
                 mUpdateLastChange.newText = s.subSequence(start, start + count).toString();
-                if(start == mUpdateLastChange.start &&
+                if (start == mUpdateLastChange.start &&
                         ((mUpdateLastChange.oldText.length() > 0
                                 || mUpdateLastChange.newText.length() > 0)
                                 && !mUpdateLastChange.oldText.equals(mUpdateLastChange.newText))) {
@@ -420,7 +419,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     @Override
     public void onSelectionChanged(int selStart, int selEnd) {
-        if(selStart == selEnd)
+        if (selStart == selEnd)
             checkMatchingBracket(selStart);
         invalidate();
     }
@@ -536,9 +535,9 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     private String[] executeIndentation(int start) {
-        if(codeEditor != null) {
+        if (codeEditor != null) {
             String[] strArr;
-            if(mNewText.equals("\n") && mIndentLine) {
+            if (mNewText.equals("\n") && mIndentLine) {
                 String prevLineIndentation = getIndentationForOffset(start);
                 StringBuilder indentation = new StringBuilder(prevLineIndentation);
                 int newCursorPosition = (indentation.length() + start) + 1;
@@ -553,36 +552,36 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 strArr[1] = indentation.toString();
                 strArr[3] = Integer.toString(newCursorPosition);
                 return strArr;
-            } else if(mInsertBracket && mNewText.equals("{")) {
+            } else if (mInsertBracket && mNewText.equals("{")) {
                 strArr = new String[4];
                 strArr[1] = "}";
                 strArr[3] = Integer.toString(start + 1);
                 return strArr;
-            } else if(mInsertBracket && mNewText.equals("}")) {
+            } else if (mInsertBracket && mNewText.equals("}")) {
                 if (start + 1 < getText().length() && getText().charAt(start + 1) == '}') {
                     strArr = new String[4];
                     strArr[2] = "";
                     strArr[3] = Integer.toString(start + 1);
                     return strArr;
                 }
-            } else if(mInsertBracket && mNewText.equals("(")) {
+            } else if (mInsertBracket && mNewText.equals("(")) {
                 strArr = new String[4];
                 strArr[1] = ")";
                 strArr[3] = Integer.toString(start + 1);
                 return strArr;
-            } else if(mInsertBracket && mNewText.equals(")")) {
+            } else if (mInsertBracket && mNewText.equals(")")) {
                 if (start + 1 < getText().length() && getText().charAt(start + 1) == ')') {
                     strArr = new String[4];
                     strArr[2] = "";
                     strArr[3] = Integer.toString(start + 1);
                     return strArr;
                 }
-            } else if(mInsertBracket && mNewText.equals("[")) {
+            } else if (mInsertBracket && mNewText.equals("[")) {
                 strArr = new String[4];
                 strArr[1] = "]";
                 strArr[3] = Integer.toString(start + 1);
                 return strArr;
-            } else if(mInsertBracket && mNewText.equals("]")
+            } else if (mInsertBracket && mNewText.equals("]")
                     && start + 1 < getText().length() && getText().charAt(start + 1) == ']') {
                 strArr = new String[4];
                 strArr[2] = "";
@@ -628,7 +627,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     protected void loadSuggestions() {
-        if(codeEditor.getLanguage() != null) {
+        if (codeEditor.getLanguage() != null) {
             ArrayList<SuggestionItem> data = new ArrayList<>();
             for (String name : codeEditor.getLanguage().getAllCompletions()) {
                 data.add(new SuggestionItem(SuggestionType.TYPE_KEYWORD, name)); //Keyword
@@ -669,10 +668,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         try {
             Layout layout = getLayout();
             if (layout != null) {
-
-                //
-                //https://stackoverflow.com/questions/3654321/measuring-text-height-to-be-drawn-on-canvas-android
-                // paint.getTextBounds() 
                 int pos = getSelectionStart();
                 int line = layout.getLineForOffset(pos);
                 int baseline = layout.getLineBaseline(line);
@@ -684,17 +679,18 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 int offsetHorizontal = (int) x + mGutterWidth;
                 setDropDownHorizontalOffset(offsetHorizontal);
 
-                int heightVisible = getHeightVisible();
+            //    int heightVisible = getHeightVisible();
                 int offsetVertical = (int) ((y + mCharHeight) - getScrollY());
 
                 int tmp = offsetVertical + getDropDownHeight() + mCharHeight;
-                if (tmp < heightVisible) {
-                    tmp = offsetVertical + mCharHeight / 2;
-                    setDropDownVerticalOffset(tmp);
-                } else {
-                    tmp = offsetVertical - getDropDownHeight() - mCharHeight;
-                    setDropDownVerticalOffset(tmp);
-                }
+//                if (tmp < heightVisible) {
+                tmp = -(offsetVertical + mCharHeight) + ((offsetVertical / mCharHeight) * (mCharHeight / 2));
+                setDropDownVerticalOffset(tmp);
+//                } else {
+//                    tmp = offsetVertical - getDropDownHeight() - mCharHeight;
+//                    setDropDownVerticalOffset(tmp);
+//                }
+
             }
         } catch (Exception e) {
             Logger.error(TAG, e);
@@ -821,7 +817,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                     int topVisualLine = layout.getLineForOffset(selectedLineStartIndex);
                     int bottomVisualLine = layout.getLineForOffset(selectedLineEndIndex);
                     int left = mGutterWidth;
-                    if(!mShowLineNumbers)
+                    if (!mShowLineNumbers)
                         left = 0; //убираем отступ для Paint'а если номера строк выключены
                     top = layout.getLineTop(topVisualLine) + getPaddingTop();
                     int right = (layout.getWidth() + getPaddingLeft()) + getPaddingRight();
@@ -867,9 +863,9 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
      */
     public void updateGutter() {
         int max = 3;
-        if(mShowLineNumbers && codeEditor != null && getLayout() != null) {
+        if (mShowLineNumbers && codeEditor != null && getLayout() != null) {
             TextPaint paint = getLayout().getPaint();
-            if(paint != null) {
+            if (paint != null) {
                 mLineNumberDigitCount = Integer.toString(codeEditor.getLineCount()).length();
                 int widestNumber = 0;
                 float widestWidth = 0.0f;
@@ -889,12 +885,12 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 }
                 mGutterWidth = (int) paint.measureText(builder.toString());
                 mGutterWidth += mIdealMargin;
-                if(getPaddingLeft() != mGutterWidth + mIdealMargin) {
+                if (getPaddingLeft() != mGutterWidth + mIdealMargin) {
                     setPadding(mGutterWidth + mIdealMargin,
                             mIdealMargin, getPaddingRight(), getPaddingBottom());
                 }
             }
-        } else if(mIdealMargin != getPaddingLeft()) {
+        } else if (mIdealMargin != getPaddingLeft()) {
             setPadding(mIdealMargin,
                     mIdealMargin, getPaddingRight(), getPaddingBottom());
         }
@@ -906,27 +902,28 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     /**
      * Очистка текста от спанов разного типа.
-     * @param e - текущий текст (Editable).
+     *
+     * @param e               - текущий текст (Editable).
      * @param foregroundSpans - очищать foreground-спаны?
      * @param backgroundSpans - очищать background-спаны?
-     * @param syntaxSpans - очищать syntax-спаны?
+     * @param syntaxSpans     - очищать syntax-спаны?
      */
     @WorkerThread
     protected static void clearSpans(Editable e, boolean foregroundSpans,
                                      boolean backgroundSpans, boolean syntaxSpans) {
-        if(foregroundSpans) { //remove foreground color spans
+        if (foregroundSpans) { //remove foreground color spans
             ForegroundColorSpan spans[] = e.getSpans(0, e.length(), ForegroundColorSpan.class);
             for (ForegroundColorSpan span : spans) {
                 e.removeSpan(span);
             }
         }
-        if(backgroundSpans) { //remove background color spans
+        if (backgroundSpans) { //remove background color spans
             BackgroundColorSpan spans[] = e.getSpans(0, e.length(), BackgroundColorSpan.class);
             for (BackgroundColorSpan span : spans) {
                 e.removeSpan(span);
             }
         }
-        if(syntaxSpans) { //remove syntax color spans
+        if (syntaxSpans) { //remove syntax color spans
             SyntaxHighlightSpan[] spans = e.getSpans(0, e.length(), SyntaxHighlightSpan.class);
             for (SyntaxHighlightSpan span : spans) {
                 e.removeSpan(span);
@@ -936,17 +933,18 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     /**
      * Процесс подсветки синтаксиса.
-     * @param layout - текущий layout.
-     * @param editable - текущий текст (Editable).
+     *
+     * @param layout     - текущий layout.
+     * @param editable   - текущий текст (Editable).
      * @param lineHeight - высота линии.
-     * @param lineCount - количество линий.
-     * @param scrollY - координата скроллинга Y.
-     * @param height - высота View.
+     * @param lineCount  - количество линий.
+     * @param scrollY    - координата скроллинга Y.
+     * @param height     - высота View.
      */
     @WorkerThread
     protected void syntaxHighlight(Layout layout, Editable editable,
                                    int lineHeight, int lineCount, int scrollY, int height) {
-         if (mSyntaxHighlight && layout != null) {
+        if (mSyntaxHighlight && layout != null) {
             int topLine = (scrollY / lineHeight) - 10;
             int bottomLine = (((scrollY + height) / lineHeight) + 1) + 10;
             if (topLine < 0) {
@@ -972,7 +970,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
                 //region PROCESS_HIGHLIGHT
 
-                if(codeEditor.getLanguage() != null) {
+                if (codeEditor.getLanguage() != null) {
                     Matcher m = codeEditor.getLanguage().getSyntaxNumbers().matcher( //Numbers
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
@@ -1085,20 +1083,21 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
             }
         }
     }
-	
-	private void invalidateVisibleArea() {
+
+    private void invalidateVisibleArea() {
         invalidate(getPaddingLeft(), getScrollY() + getPaddingTop(),
                 getWidth(), (getScrollY() + getPaddingTop()) + getHeight());
     }
 
     /**
      * Алгоритм совпадения скобок.
+     *
      * @param pos - позиция курсора.
      */
     protected void checkMatchingBracket(int pos) {
         getText().removeSpan(mOpenBracketSpan);
         getText().removeSpan(mClosedBracketSpan);
-        if(mBracketMatching && codeEditor.getLanguage() != null) {
+        if (mBracketMatching && codeEditor.getLanguage() != null) {
             if (pos > 0 && pos <= getText().length()) {
                 char c1 = getText().charAt(pos - 1);
                 for (int i = 0; i < codeEditor.getLanguage().getLanguageBrackets().length; i++) {
@@ -1146,6 +1145,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     /**
      * Подсветка найденных скобок.
+     *
      * @param i - позиция первой скобки.
      * @param j - позиция второй скобки.
      */
@@ -1159,20 +1159,20 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     //region PINCH_ZOOM
 
     protected boolean pinchZoom(MotionEvent ev) {
-        switch(ev.getAction()) {
+        switch (ev.getAction()) {
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 zoomPinch = false;
                 break;
             case MotionEvent.ACTION_MOVE:
-                if(ev.getPointerCount() == 2) {
+                if (ev.getPointerCount() == 2) {
                     float distance = getDistanceBetweenTouches(ev);
-                    if(!zoomPinch) {
-                        zoomPinchFactor = textSize/distance;
+                    if (!zoomPinch) {
+                        zoomPinchFactor = textSize / distance;
                         zoomPinch = true;
                         break;
                     }
-                    textSize = zoomPinchFactor*distance;
+                    textSize = zoomPinchFactor * distance;
                     validateTextSize();
                     setTextSize(textSize);
                 }
@@ -1182,15 +1182,15 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     protected float getDistanceBetweenTouches(MotionEvent ev) {
-        float xx = ev.getX(1)-ev.getX(0);
-        float yy = ev.getY(1)-ev.getY(0);
-        return (float) Math.sqrt(xx*xx+yy*yy);
+        float xx = ev.getX(1) - ev.getX(0);
+        float yy = ev.getY(1) - ev.getY(0);
+        return (float) Math.sqrt(xx * xx + yy * yy);
     }
 
     protected void validateTextSize() {
-        if(textSize < 10) //minimum
+        if (textSize < 10) //minimum
             textSize = 10; //minimum
-        else if(textSize > 20) //maximum
+        else if (textSize > 20) //maximum
             textSize = 20; //maximum
     }
 
@@ -1201,6 +1201,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     /**
      * Отключаем фокусировку на редакторе, нажатия не будут засчитываться,
      * однако скроллинг будет продолжать работать.
+     *
      * @param readOnly - отвечает за режим "Read Only".
      */
     public void setReadOnly(boolean readOnly) {
@@ -1210,11 +1211,12 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     /**
      * Метод для переключения подсветки синтаксиса.
+     *
      * @param syntaxHighlight - отвечает за включение подсветки синтаксиса.
      */
     public void setSyntaxHighlight(boolean syntaxHighlight) {
         mSyntaxHighlight = syntaxHighlight;
-        if(mSyntaxHighlight)
+        if (mSyntaxHighlight)
             syntaxHighlight(getLayout(), getEditableText(), getLineHeight(),
                     getLineCount(), getScrollY(), getHeight());
         else //Очищаем syntax-спаны, потому что они больше не нужны при выключенной подсветке
@@ -1223,6 +1225,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     /**
      * Метод переключает подсветку скобок.
+     *
      * @param bracketMatching - отвечает за включение сопоставления скобок.
      */
     public void setBracketMatching(boolean bracketMatching) {
@@ -1234,7 +1237,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
      * то они не будут отображаться.
      */
     public void refreshInputType() {
-        if(mWrapper.getImeKeyboard())
+        if (mWrapper.getImeKeyboard())
             setInputType(InputType.TYPE_CLASS_TEXT
                     | InputType.TYPE_TEXT_FLAG_MULTI_LINE
                     | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE);
@@ -1249,11 +1252,11 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
      * Отображение шрифта в редакторе. Применяется также и к нумерации строк.
      */
     public void refreshTypeface() {
-        if(mWrapper.getCurrentTypeface().equals("droid_sans_mono")) {
+        if (mWrapper.getCurrentTypeface().equals("droid_sans_mono")) {
             setTypeface(TypefaceManager.get(mContext, TypefaceManager.DROID_SANS_MONO));
-        } else if(mWrapper.getCurrentTypeface().equals("source_code_pro")) {
+        } else if (mWrapper.getCurrentTypeface().equals("source_code_pro")) {
             setTypeface(TypefaceManager.get(mContext, TypefaceManager.SOURCE_CODE_PRO));
-        } else if(mWrapper.getCurrentTypeface().equals("roboto")) {
+        } else if (mWrapper.getCurrentTypeface().equals("roboto")) {
             setTypeface(TypefaceManager.get(mContext, TypefaceManager.ROBOTO));
         } else { //if(mWrapper.getCurrentTypeface().equals("roboto_light"))
             setTypeface(TypefaceManager.get(mContext, TypefaceManager.ROBOTO_LIGHT));
@@ -1271,7 +1274,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     public void setCodeCompletion(boolean enabled) {
         mAutoComplete = enabled;
-        if(!mAutoComplete) {
+        if (!mAutoComplete) {
             setTokenizer(null); //fix
         } else {
             loadSuggestions(); //загружаем список слов
@@ -1294,9 +1297,9 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     public void setPinchZoom(boolean enabled) {
         mPinchZoom = enabled;
-        if(mPinchZoom) {
+        if (mPinchZoom) {
             float scaledDensity = getResources().getDisplayMetrics().scaledDensity;
-            textSize = getTextSize()/scaledDensity;
+            textSize = getTextSize() / scaledDensity;
             setOnTouchListener((v, ev) -> pinchZoom(ev));
         } else {
             setOnTouchListener((v, ev) -> false);
@@ -1313,6 +1316,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     /**
      * Изменение цвета курсора в редакторе. {https://stackoverflow.com/a/26543290/4405457}
+     *
      * @param color - цвет Caret'а.
      */
     public void setCursorColor(@ColorInt int color) {
@@ -1364,7 +1368,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     public void cut() {
         Editable selectedText = getSelectedText();
-        if(selectedText == null || selectedText.toString().equals("")) {
+        if (selectedText == null || selectedText.toString().equals("")) {
             codeEditor.showToast(mContext.getString(R.string.nothing_to_cut), true);
             Logger.debug(TAG, mContext.getString(R.string.nothing_to_cut));
         } else {
@@ -1503,9 +1507,9 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     public void gotoLine(int toLine) {
         int realLine = toLine - 1;
-        if(realLine == -1) {
+        if (realLine == -1) {
             codeEditor.showToast(mContext.getString(R.string.gotoLine_above_than_0), true);
-        } else if(realLine < codeEditor.getLineCount()) {
+        } else if (realLine < codeEditor.getLineCount()) {
             setSelection(codeEditor.getIndexForStartOfLine(realLine));
         } else {
             codeEditor.showToast(mContext.getString(R.string.gotoLine_not_exists), true);

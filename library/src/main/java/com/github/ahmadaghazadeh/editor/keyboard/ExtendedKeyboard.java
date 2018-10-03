@@ -26,11 +26,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.github.ahmadaghazadeh.editor.adapter.Symbol;
 import com.github.ahmadaghazadeh.editor.adapter.SymbolAdapter;
 
-/**
- * @author Trần Lê Duy
- */
+import java.util.LinkedList;
+import java.util.List;
+
+
 public class ExtendedKeyboard extends RecyclerView {
 
     private OnKeyListener mListener;
@@ -64,8 +66,33 @@ public class ExtendedKeyboard extends RecyclerView {
 
     private void setup(Context context) {
         mAdapter = new SymbolAdapter();
-        mAdapter.setListKey(new String[]{"{", "}", "(", ")", ";", ",", ".", "=", "\"", "|", "&",
-                "!", "[", "]", "<", ">", "+", "-", "/", "*", "?", ":", "_"});
+        List<Symbol> symbolList=new LinkedList<>();
+        symbolList.add(new Symbol("Tab","    ",-1));
+        symbolList.add(new Symbol("End","End",-1));
+        symbolList.add(new Symbol("{","{",-1));
+        symbolList.add(new Symbol("}","}",0));
+        symbolList.add(new Symbol("(","(",-1));
+        symbolList.add(new Symbol(")",")",0));
+        symbolList.add(new Symbol(";",";",0));
+        symbolList.add(new Symbol(",",",",0));
+        symbolList.add(new Symbol(".",".",0));
+        symbolList.add(new Symbol("=","=",0));
+        symbolList.add(new Symbol("\"","\"",0));
+        symbolList.add(new Symbol("|","|",0));
+        symbolList.add(new Symbol("&","&",0));
+        symbolList.add(new Symbol("!","!",0));
+        symbolList.add(new Symbol("[","[",-1));
+        symbolList.add(new Symbol("]","]",0));
+        symbolList.add(new Symbol("<","<",0));
+        symbolList.add(new Symbol(">",">",0));
+        symbolList.add(new Symbol("+","+",0));
+        symbolList.add(new Symbol("-","-",0));
+        symbolList.add(new Symbol("/","/",0));
+        symbolList.add(new Symbol("*","*",0));
+        symbolList.add(new Symbol("?","?",0));
+        symbolList.add(new Symbol(":",":",0));
+        symbolList.add(new Symbol("_","_",0));
+        mAdapter.setListKey(symbolList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         setLayoutManager(linearLayoutManager);
@@ -74,6 +101,6 @@ public class ExtendedKeyboard extends RecyclerView {
     }
 
     public interface OnKeyListener {
-        void onKeyClick(View view, String text);
+        void onKeyClick(View view, Symbol symbol);
     }
 }
