@@ -65,8 +65,9 @@ import com.github.ahmadaghazadeh.editor.processor.style.StylePaint;
 import com.github.ahmadaghazadeh.editor.processor.style.StyleSpan;
 import com.github.ahmadaghazadeh.editor.processor.style.SyntaxHighlightSpan;
 import com.github.ahmadaghazadeh.editor.processor.utils.Converter;
+import com.github.ahmadaghazadeh.editor.processor.utils.DefaultSetting;
+import com.github.ahmadaghazadeh.editor.processor.utils.ITextProcessorSetting;
 import com.github.ahmadaghazadeh.editor.processor.utils.Logger;
-import com.github.ahmadaghazadeh.editor.processor.utils.Wrapper;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.LineUtils;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.SymbolsTokenizer;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.TextChange;
@@ -84,7 +85,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     private static final String TAB_STR = "    "; //4 spaces
 
-    private Wrapper mWrapper;
+    private ITextProcessorSetting defaultSetting;
     private CodeEditor codeEditor;
     private ClipboardManager mClipboardManager;
     private Context mContext;
@@ -185,7 +186,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     protected void initParameters() {
-        mWrapper = new Wrapper(mContext);
+        defaultSetting = new DefaultSetting(mContext);
         mClipboardManager = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
         mScroller = new Scroller(mContext);
         mScrollChangedListeners = new OnScrollChangedListener[0];
@@ -747,7 +748,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 int velocityX;
                 mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
                 int velocityY = (int) mVelocityTracker.getYVelocity();
-                if (mWrapper.getWrapContent()) {
+                if (defaultSetting.getWrapContent()) {
                     velocityX = 0;
                 } else {
                     velocityX = (int) mVelocityTracker.getXVelocity();
@@ -1237,7 +1238,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
      * то они не будут отображаться.
      */
     public void refreshInputType() {
-        if (mWrapper.getImeKeyboard())
+        if (defaultSetting.getImeKeyboard())
             setInputType(InputType.TYPE_CLASS_TEXT
                     | InputType.TYPE_TEXT_FLAG_MULTI_LINE
                     | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE);
@@ -1252,13 +1253,13 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
      * Отображение шрифта в редакторе. Применяется также и к нумерации строк.
      */
     public void refreshTypeface() {
-        if (mWrapper.getCurrentTypeface().equals("droid_sans_mono")) {
+        if (defaultSetting.getCurrentTypeface().equals("droid_sans_mono")) {
             setTypeface(TypefaceManager.get(mContext, TypefaceManager.DROID_SANS_MONO));
-        } else if (mWrapper.getCurrentTypeface().equals("source_code_pro")) {
+        } else if (defaultSetting.getCurrentTypeface().equals("source_code_pro")) {
             setTypeface(TypefaceManager.get(mContext, TypefaceManager.SOURCE_CODE_PRO));
-        } else if (mWrapper.getCurrentTypeface().equals("roboto")) {
+        } else if (defaultSetting.getCurrentTypeface().equals("roboto")) {
             setTypeface(TypefaceManager.get(mContext, TypefaceManager.ROBOTO));
-        } else { //if(mWrapper.getCurrentTypeface().equals("roboto_light"))
+        } else { //if(defaultSetting.getCurrentTypeface().equals("roboto_light"))
             setTypeface(TypefaceManager.get(mContext, TypefaceManager.ROBOTO_LIGHT));
         }
         mLineNumberPaint.setTypeface(getTypeface());

@@ -34,16 +34,36 @@ dependencies {
 ```
 
 ### Basic Usage
+#### XML DataBinding
+```xml
+...
+
+
+        <com.github.ahmadaghazadeh.editor.widget.CodeEditor
+            bind:code="@{viewModel.code}"
+            bind:lang="@{viewModel.lang}"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
+...
+```
+
 #### XML
 ```xml
 ...
-  <com.github.ahmadaghazadeh.editor.widget.CodeEditor
-        app:code="@string/code"
-        app:langName="Css"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+
+
+        <com.github.ahmadaghazadeh.editor.widget.CodeEditor
+            bind:code="<html></html>"
+            bind:lang="html"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
 ...
 ```
+
 
 #### Java
 Demo Activity:

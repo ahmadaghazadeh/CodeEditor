@@ -1,7 +1,9 @@
 package com.github.ahmadaghazadeh.editor.widget;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.databinding.BindingAdapter;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -55,6 +57,20 @@ public class CodeEditor extends RelativeLayout implements Serializable {
     public CodeEditor(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, null);
+    }
+
+    @BindingAdapter(value = {"code", "lang"},requireAll = false)
+    public static void setCodeView(CodeEditor view, MutableLiveData<String> code, MutableLiveData<String> lang) {
+        if (view == null) {
+            return;
+        }
+        if (code != null) {
+            view.setText(code.getValue(), 1);
+        }
+        if (lang != null) {
+            view.setLanguage(LanguageProvider.getLanguage(lang.getValue()));
+        }
+
     }
 
     private void init(Context context, AttributeSet attrs) {
@@ -154,7 +170,6 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
     }
 
-
     public void refreshEditor() {
         if (editor != null) {
             editor.setTextSize(setting.getFontSize());
@@ -202,11 +217,11 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         return language;
     }
 
+    //region METHODS_DOC
+
     public void setLanguage(@Nullable Language language) {
         this.language = language;
     }
-
-    //region METHODS_DOC
 
     /**
      * Методы для редактора, чтобы менять их в "Runtime".
@@ -217,14 +232,14 @@ public class CodeEditor extends RelativeLayout implements Serializable {
             editor.setReadOnly(readOnly);
     }
 
+    //endregion METHODS_DOC
+
+    //region LINES
+
     public void setSyntaxHighlight(boolean syntaxHighlight) {
         if (editor != null)
             editor.setSyntaxHighlight(syntaxHighlight);
     }
-
-    //endregion METHODS_DOC
-
-    //region LINES
 
     public void setLineStartsList(LinesCollection list) {
         lineNumbers = list;
@@ -305,6 +320,10 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         }
     }
 
+    //endregion LINES
+
+    //region METHODS
+
     public void setText(Editable text, int flag) {
         if (flag == 1) {
             this.text = text;
@@ -319,10 +338,6 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         replaceText(0, length, text);
         setDirty(false);
     }
-
-    //endregion LINES
-
-    //region METHODS
 
     public void insert(@NonNull CharSequence text) {
         if (editor != null)
@@ -421,12 +436,5 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
     }
 
-//    @BindingAdapter(value = {"code", "lang"})
-//    public static void setCodeView(CodeEditor view, String code, String lang) {
-//        if (code != null && view != null ) {
-//            view.setText(code,1);
-//            view.setLanguage(LanguageProvider.getLanguage(lang));
-//        }
-//    }
 
 }
