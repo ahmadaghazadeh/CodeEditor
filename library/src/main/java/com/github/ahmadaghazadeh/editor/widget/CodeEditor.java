@@ -109,7 +109,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
     private void init(Context context, AttributeSet attrs) {
         try {
-            removeAllViews();
+
             this.context = context;
             initEditor();
             String code = "";
@@ -132,6 +132,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
             RelativeLayout.LayoutParams rootViewParam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
             rootView = new RelativeLayout(context);
+            rootView.removeAllViews();
             rootView.setLayoutParams(rootViewParam);
             GutterView gutterView = new GutterView(context);
             gutterView.setId(R.id.gutterView);
