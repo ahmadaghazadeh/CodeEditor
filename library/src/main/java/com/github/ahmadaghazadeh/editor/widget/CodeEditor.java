@@ -170,6 +170,11 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
     }
 
+    public void initEditor(String code,String lang){
+        setText(code, 1);
+        setLanguage(LanguageProvider.getLanguage(lang));
+    }
+
     public void refreshEditor() {
         if (editor != null) {
             editor.setTextSize(setting.getFontSize());
