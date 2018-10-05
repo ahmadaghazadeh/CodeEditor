@@ -35,6 +35,9 @@ public class CodeEditor extends RelativeLayout implements Serializable {
     private LinesCollection lineNumbers;
     private Editable text;
     private ITextProcessorSetting setting;
+    private ExtendedKeyboard recyclerView;
+    boolean isReadOnly = false;
+    boolean isShowExtendedKeyboard = false;
     private boolean isDirty; //На данный момент не используется
 
     public CodeEditor(Context context) {
@@ -59,8 +62,10 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         init(context, null);
     }
 
-    @BindingAdapter(value = {"code", "lang", "isReadOnly"}, requireAll = false)
-    public static void setCodeView(CodeEditor view, MutableLiveData<String> code, MutableLiveData<String> lang, boolean isReadOnly) {
+    @BindingAdapter(value = {"code", "lang", "isReadOnly","isShowExtendedKeyboard"})
+    public static void setCodeView(CodeEditor view, MutableLiveData<String> code, MutableLiveData<String> lang,
+                                   boolean isReadOnly,
+                                   boolean isShowExtendedKeyboard) {
         if (view == null) {
             return;
         }
@@ -71,6 +76,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
             view.setLanguage(LanguageProvider.getLanguage(lang.getValue()));
         }
         view.setReadOnly(isReadOnly);
+        view.setShowExtendedKeyboard(isShowExtendedKeyboard);
 
     }
 
@@ -83,7 +89,8 @@ public class CodeEditor extends RelativeLayout implements Serializable {
             initEditor();
             String code = "";
             String lang = "html";
-            boolean isReadOnly = false;
+            isReadOnly = false;
+            isShowExtendedKeyboard = false;
             if (attrs != null) {
                 TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CodeEditor, 0, 0);
                 if (a.hasValue(R.styleable.CodeEditor_code)) {
@@ -93,6 +100,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
                     lang = a.getString(R.styleable.CodeEditor_lang);
                 }
                 isReadOnly = a.getBoolean(R.styleable.CodeEditor_isReadOnly, false);
+                isShowExtendedKeyboard = a.getBoolean(R.styleable.CodeEditor_isShowExtendedKeyboard, true);
                 a.recycle();
 
             }
@@ -155,7 +163,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
             editor.enableUndoRedoStack();
 
 
-            ExtendedKeyboard recyclerView = new ExtendedKeyboard(context);
+            recyclerView = new ExtendedKeyboard(context);
             recyclerView.setId(R.id.recyclerView);
             RelativeLayout.LayoutParams recyclerViewParam = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 40);
 
@@ -179,8 +187,15 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
                     }
             );
+            setShowExtendedKeyboard(isShowExtendedKeyboard);
         } catch (Exception ex) {
             ex.getMessage();
+        }
+    }
+
+    public void setShowExtendedKeyboard(Boolean showExtendedKeyboard) {
+        if (recyclerView != null) {
+            recyclerView.setVisibility(showExtendedKeyboard ? VISIBLE : GONE);
         }
     }
 

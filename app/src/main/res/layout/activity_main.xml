@@ -19,6 +19,7 @@
             bind:isReadOnly="@{true}"
             bind:code="@{viewModel.code}"
             bind:lang="@{viewModel.lang}"
+            bind:isShowExtendedKeyboard="@{false}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 

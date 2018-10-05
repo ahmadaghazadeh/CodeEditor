@@ -22,12 +22,14 @@
 
     <attr name="code" format="string" />
     <attr name="isReadOnly" format="boolean" />
+    <attr name="isShowExtendedKeyboard" format="boolean" />
     <attr name="lang" format="string|enum"/>
 
     <declare-styleable name="CodeEditor">
         <attr name="code" />
         <attr name="lang"  />
         <attr name="isReadOnly"  />
+        <attr name="isShowExtendedKeyboard"  />
     </declare-styleable>
 
     <declare-styleable name="ThemeAttributes">
