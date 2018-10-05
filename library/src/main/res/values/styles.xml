@@ -33,7 +33,6 @@
         <item name="android:divider">@null</item>
         <item name="android:dividerHeight">0dp</item>
         <item name="colorControlNormal">@color/gray</item>
-
         <item name="fontFamily">@font/main_sans</item>
 <!--
         <item name="md_medium_font">josefin_sans_semibold.ttf</item>
@@ -55,29 +54,28 @@
 
     <!-- Darcula Theme -->
     <style name="Theme.Darcula" parent="Theme.Editor.BaseDark">
-        <item name="colorPrimary">#3c3f41</item>
-        <item name="colorPrimaryDark">#3c3f41</item>
-        <item name="colorAccent">#FF8000</item>
-        <item name="colorTabs">#37383A</item>
-        <item name="colorTabIndicator">#FF8000</item>
-        <item name="colorDocBackground">#303030</item>
-        <item name="colorDocText">#AAB6C6</item>
-        <item name="colorNumbersText">#808080</item>
-        <item name="colorSelection">#214283</item>
-        <item name="colorCursor">#BBBBBB</item>
-        <item name="colorSearchSpan">#32593D</item>
-        <item name="colorNumbersBackground">#343638</item>
-        <item name="colorSelectedLine">#3A3A3A</item>
-        <item name="colorBracketSpan">#33654B</item>
-        <item name="colorDropDown">#3c3f41</item>
-
-        <item name="syntaxNumbers">#6897BB</item>
-        <item name="syntaxSymbols">#E8E2B7</item>
-        <item name="syntaxBrackets">#E8E2B7</item>
-        <item name="syntaxKeywords">#EC7600</item>
-        <item name="syntaxMethods">#FEC76C</item>
-        <item name="syntaxStrings">#6E875A</item>
-        <item name="syntaxComments">#66747B</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorTabs">@color/colorTabs</item>
+        <item name="colorTabIndicator">@color/colorTabIndicator</item>
+        <item name="colorDocBackground">@color/colorDocBackground</item>
+        <item name="colorDocText">@color/colorDocText</item>
+        <item name="colorNumbersText">@color/colorNumbersText</item>
+        <item name="colorSelection">@color/colorSelection</item>
+        <item name="colorCursor">@color/colorCursor</item>
+        <item name="colorSearchSpan">@color/colorSearchSpan</item>
+        <item name="colorNumbersBackground">@color/colorNumbersBackground</item>
+        <item name="colorSelectedLine">@color/colorSelectedLine</item>
+        <item name="colorBracketSpan">@color/colorBracketSpan</item>
+        <item name="colorDropDown">@color/colorDropDown</item>
+        <item name="syntaxNumbers">@color/syntaxNumbers</item>
+        <item name="syntaxSymbols">@color/syntaxSymbols</item>
+        <item name="syntaxBrackets">@color/syntaxBrackets</item>
+        <item name="syntaxKeywords">@color/syntaxKeywords</item>
+        <item name="syntaxMethods">@color/syntaxMethods</item>
+        <item name="syntaxStrings">@color/syntaxStrings</item>
+        <item name="syntaxComments">@color/syntaxComments</item>
     </style>
 
 </resources>

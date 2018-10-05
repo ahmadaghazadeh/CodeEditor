@@ -33,7 +33,6 @@
     </declare-styleable>
 
     <declare-styleable name="ThemeAttributes">
-        <!-- Интерфейс -->
         <attr name="colorTabs" format="color"/>
         <attr name="colorTabIndicator" format="color"/>
         <attr name="colorDocBackground" format="color"/>
@@ -47,7 +46,6 @@
         <attr name="colorBracketSpan" format="color"/>
         <attr name="colorDropDown" format="color"/>
 
-        <!-- Цвета для подсветки синтаксиса -->
         <attr name="syntaxNumbers" format="color"/>
         <attr name="syntaxSymbols" format="color"/>
         <attr name="syntaxBrackets" format="color"/>

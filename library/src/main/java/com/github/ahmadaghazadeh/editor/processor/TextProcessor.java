@@ -22,6 +22,7 @@ package com.github.ahmadaghazadeh.editor.processor;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -203,12 +204,18 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     protected void initTheme() {
         TypedValue colorAttr;
 
+        Resources.Theme theme=mContext.getTheme();
 
         mLineNumberPaint = new StylePaint(true, false);
         colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.colorNumbersText, colorAttr, true);
-        mLineNumberPaint.setColor(colorAttr.data);
+        @ColorInt int color=getContext().getResources().getColor(R.color.colorNumbersText);
+        if(!theme.resolveAttribute(R.attr.colorNumbersText, colorAttr, true)){
+            theme.resolveAttribute(R.attr.colorNumbersText, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.colorNumbersText);
+        }
+        mLineNumberPaint.setColor(color);
         mLineNumberPaint.setTextAlign(StylePaint.Align.RIGHT);
         mLineNumberPaint.setTextSize(getTextSize());
 
@@ -216,74 +223,136 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         mLinePaint.setColor(mLineNumberPaint.getColor());
         mLinePaint.setStyle(StylePaint.Style.STROKE);
 
+
         mGutterBackgroundPaint = new StylePaint(false, false);
         colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.colorNumbersBackground, colorAttr, true);
-        mGutterBackgroundPaint.setColor(colorAttr.data);
+
+        if(!theme.resolveAttribute(R.attr.colorNumbersBackground, colorAttr, true)){
+            theme.resolveAttribute(R.attr.colorNumbersBackground, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.colorNumbersBackground);
+        }
+        mGutterBackgroundPaint.setColor(color);
 
         mSelectedLinePaint = new StylePaint(false, false);
-        colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.colorSelectedLine, colorAttr, true);
-        mSelectedLinePaint.setColor(colorAttr.data);
+
+        if(!theme.resolveAttribute(R.attr.colorSelectedLine, colorAttr, true)){
+            theme.resolveAttribute(R.attr.colorSelectedLine, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.colorSelectedLine);
+        }
+        mSelectedLinePaint.setColor(color);
 
         //endregion Paints
 
         mColorSearchSpan = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.colorSearchSpan, mColorSearchSpan, true);
+
+        if(!theme.resolveAttribute(R.attr.syntaxNumbers, colorAttr, true)){
+            theme.resolveAttribute(R.attr.syntaxNumbers, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.syntaxNumbers);
+        }
+        mSyntaxNumbers = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.syntaxNumbers, colorAttr, true);
-        mSyntaxNumbers = new StyleSpan(colorAttr.data, false, false);
+
+        if(!theme.resolveAttribute(R.attr.syntaxSymbols, colorAttr, true)){
+            theme.resolveAttribute(R.attr.syntaxSymbols, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.syntaxSymbols);
+        }
+
+        mSyntaxSymbols = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.syntaxSymbols, colorAttr, true);
-        mSyntaxSymbols = new StyleSpan(colorAttr.data, false, false);
+
+        if(!theme.resolveAttribute(R.attr.syntaxBrackets, colorAttr, true)){
+            theme.resolveAttribute(R.attr.syntaxBrackets, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.syntaxBrackets);
+        }
+        mSyntaxBrackets = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.syntaxBrackets, colorAttr, true);
-        mSyntaxBrackets = new StyleSpan(colorAttr.data, false, false);
+
+        if(!theme.resolveAttribute(R.attr.syntaxKeywords, colorAttr, true)){
+            theme.resolveAttribute(R.attr.syntaxKeywords, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.syntaxKeywords);
+        }
+        mSyntaxKeywords = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.syntaxKeywords, colorAttr, true);
-        mSyntaxKeywords = new StyleSpan(colorAttr.data, false, false);
+
+        if(!theme.resolveAttribute(R.attr.syntaxMethods, colorAttr, true)){
+            theme.resolveAttribute(R.attr.syntaxMethods, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.syntaxMethods);
+        }
+
+        mSyntaxMethods = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.syntaxMethods, colorAttr, true);
-        mSyntaxMethods = new StyleSpan(colorAttr.data, false, false);
+
+        if(!theme.resolveAttribute(R.attr.syntaxStrings, colorAttr, true)){
+            theme.resolveAttribute(R.attr.syntaxStrings, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.syntaxStrings);
+        }
+
+        mSyntaxStrings = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.syntaxStrings, colorAttr, true);
-        mSyntaxStrings = new StyleSpan(colorAttr.data, false, false);
+
+        if(!theme.resolveAttribute(R.attr.syntaxComments, colorAttr, true)){
+            theme.resolveAttribute(R.attr.syntaxComments, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.syntaxComments);
+        }
+
+        mSyntaxComments = new StyleSpan(color, false, true);
 
         colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.syntaxComments, colorAttr, true);
-        mSyntaxComments = new StyleSpan(colorAttr.data, false, true);
+
+        if(!theme.resolveAttribute(R.attr.colorBracketSpan, colorAttr, true)){
+            theme.resolveAttribute(R.attr.colorBracketSpan, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.colorBracketSpan);
+        }
+
+        mOpenBracketSpan = new BackgroundColorSpan(color);
+        mClosedBracketSpan = new BackgroundColorSpan(color);
 
         colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.colorBracketSpan, colorAttr, true);
-        mOpenBracketSpan = new BackgroundColorSpan(colorAttr.data);
-        mClosedBracketSpan = new BackgroundColorSpan(colorAttr.data);
+
+        if(!theme.resolveAttribute(R.attr.colorCursor, colorAttr, true)){
+            theme.resolveAttribute(R.attr.colorCursor, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.colorCursor);
+        }
+
+        setCursorColor(color); //Cursor Color
 
         colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.colorCursor, colorAttr, true);
-        setCursorColor(colorAttr.data); //Cursor Color
-
-        colorAttr = new TypedValue();
-        mContext.getTheme()
-                .resolveAttribute(R.attr.colorSelection, colorAttr, true);
-        setHighlightColor(colorAttr.data); //Selection Color
+        color=getContext().getResources().getColor(R.color.colorSelection);
+        if(!theme.resolveAttribute(R.attr.colorSelection, colorAttr, true)){
+            theme.resolveAttribute(R.attr.colorSelection, colorAttr, true);
+            color=colorAttr.data;
+            if(color==0)
+                color=getContext().getResources().getColor(R.color.colorNumbersText);
+        }
+        setHighlightColor(color); //Selection Color
     }
 
     protected void initMethods() {

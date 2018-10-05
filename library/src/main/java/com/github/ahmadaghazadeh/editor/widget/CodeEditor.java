@@ -82,10 +82,8 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
     private void init(Context context, AttributeSet attrs) {
         try {
-
-
+            removeAllViews();
             this.context = context;
-            context.setTheme(R.style.Theme_Darcula);
             initEditor();
             String code = "";
             String lang = "html";
@@ -124,7 +122,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
             editor.setGravity(Gravity.TOP | Gravity.START);
             TypedArray a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
             try {
-                int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocBackground, /*default color*/ 0);
+                int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocBackground, getResources().getColor(R.color.colorDocBackground));
                 editor.setBackgroundColor(colorResource);
             } finally {
                 a.recycle();
@@ -132,7 +130,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
             a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
             try {
-                int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocText, /*default color*/ 0);
+                int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocText,getResources().getColor(R.color.colorDocText));
                 editor.setTextColor(colorResource);
             } finally {
                 a.recycle();

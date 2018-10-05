@@ -16,10 +16,10 @@
 
 
         <com.github.ahmadaghazadeh.editor.widget.CodeEditor
-            bind:isReadOnly="@{true}"
+            bind:isReadOnly="@{false}"
             bind:code="@{viewModel.code}"
             bind:lang="@{viewModel.lang}"
-            bind:isShowExtendedKeyboard="@{false}"
+            bind:isShowExtendedKeyboard="@{true}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
