@@ -59,8 +59,8 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         init(context, null);
     }
 
-    @BindingAdapter(value = {"code", "lang","isReadOnly"},requireAll = false)
-    public static void setCodeView(CodeEditor view, MutableLiveData<String> code, MutableLiveData<String> lang,boolean isReadOnly) {
+    @BindingAdapter(value = {"code", "lang", "isReadOnly"}, requireAll = false)
+    public static void setCodeView(CodeEditor view, MutableLiveData<String> code, MutableLiveData<String> lang, boolean isReadOnly) {
         if (view == null) {
             return;
         }
@@ -75,103 +75,116 @@ public class CodeEditor extends RelativeLayout implements Serializable {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        this.context = context;
-        context.setTheme(R.style.Theme_Darcula);
-        initEditor();
-        String code = "";
-        String lang = "html";
-        if (attrs != null) {
-
-        }
-        RelativeLayout.LayoutParams rootViewParam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-
-        rootView = new RelativeLayout(context);
-        rootView.setLayoutParams(rootViewParam);
-        GutterView gutterView = new GutterView(context);
-        gutterView.setId(R.id.gutterView);
-        RelativeLayout.LayoutParams paramsGutter = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-        paramsGutter.alignWithParent = true;
-        gutterView.setLayoutParams(paramsGutter);
-        rootView.addView(gutterView);
-
-
-        editor = new TextProcessor(context);
-        editor.setId(R.id.editor);
-        RelativeLayout.LayoutParams paramsTxtprocessor = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        editor.setLayoutParams(paramsTxtprocessor);
-        editor.setScrollBarStyle(SCROLLBARS_OUTSIDE_INSET);
-        editor.setGravity(Gravity.TOP | Gravity.START);
-        TypedArray a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
         try {
-            int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocBackground, /*default color*/ 0);
-            editor.setBackgroundColor(colorResource);
-        } finally {
-            a.recycle();
-        }
-
-        a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
-        try {
-            int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocText, /*default color*/ 0);
-            editor.setTextColor(colorResource);
-        } finally {
-            a.recycle();
-        }
-        editor.setLayerType(LAYER_TYPE_SOFTWARE, new TextPaint());
-        rootView.addView(editor);
-
-        editor.init(this);
-
-        FastScrollerView mFastScrollerView = new FastScrollerView(context);
-        mFastScrollerView.setId(R.id.fastScrollerView);
-        RelativeLayout.LayoutParams fastParam = new RelativeLayout.LayoutParams(30, LayoutParams.MATCH_PARENT);
-        fastParam.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, TRUE);
-        mFastScrollerView.setLayoutParams(fastParam);
-        rootView.addView(mFastScrollerView);
-        mFastScrollerView.link(editor); //подключаем FastScroller к редактору
-
-        gutterView.link(editor, lineNumbers); //подключаем Gutter к редактору
-        LinesCollection lines = new LinesCollection();
-        lines.add(0, 0);
-        setLanguage(LanguageProvider.getLanguage(lang)); //ставим язык
-        setText(code, 1); //заполняем поле текстом
-        setLineStartsList(lines); //подгружаем линии
-        refreshEditor(); //подключаем все настройки
-        editor.enableUndoRedoStack();
 
 
-        ExtendedKeyboard recyclerView = new ExtendedKeyboard(context);
-        recyclerView.setId(R.id.recyclerView);
-        RelativeLayout.LayoutParams recyclerViewParam = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 40);
-
-
-        // paramsTxtprocessor.addRule(RelativeLayout.ALIGN_PARENT_TOP,TRUE);
-        // paramsTxtprocessor.addRule(RelativeLayout.ABOVE,recyclerView.getId());
-
-        //recyclerViewParam.addRule(RelativeLayout.ALIGN_PARENT_START,TRUE);
-        recyclerViewParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, TRUE);
-        recyclerView.setPadding(45, 0, 0, 0);
-        recyclerView.setLayoutParams(recyclerViewParam);
-        rootView.addView(recyclerView);
-        addView(rootView);
-        recyclerView.setListener((view, symbol) -> {
-                    if (symbol.getShowText().endsWith("End")) {
-                        String text = editor.getText().toString();
-                        int x = text.indexOf("\n", editor.getSelectionStart());
-                        if (x == -1) {
-                            x = text.length();
-                        }
-                        editor.setSelection(x);
-
-                    } else {
-                        editor.getText().insert(editor.getSelectionStart(), symbol.getWriteText());
-                    }
-
+            this.context = context;
+            context.setTheme(R.style.Theme_Darcula);
+            initEditor();
+            String code = "";
+            String lang = "html";
+            boolean isReadOnly = false;
+            if (attrs != null) {
+                TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CodeEditor, 0, 0);
+                if (a.hasValue(R.styleable.CodeEditor_code)) {
+                    code = a.getString(R.styleable.CodeEditor_code);
                 }
-        );
+                if (a.hasValue(R.styleable.CodeEditor_lang)) {
+                    lang = a.getString(R.styleable.CodeEditor_lang);
+                }
+                isReadOnly = a.getBoolean(R.styleable.CodeEditor_isReadOnly, false);
+                a.recycle();
 
+            }
+            RelativeLayout.LayoutParams rootViewParam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+            rootView = new RelativeLayout(context);
+            rootView.setLayoutParams(rootViewParam);
+            GutterView gutterView = new GutterView(context);
+            gutterView.setId(R.id.gutterView);
+            RelativeLayout.LayoutParams paramsGutter = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+            paramsGutter.alignWithParent = true;
+            gutterView.setLayoutParams(paramsGutter);
+            rootView.addView(gutterView);
+
+
+            editor = new TextProcessor(context);
+            editor.setId(R.id.editor);
+            RelativeLayout.LayoutParams paramsTxtprocessor = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            editor.setLayoutParams(paramsTxtprocessor);
+            editor.setScrollBarStyle(SCROLLBARS_OUTSIDE_INSET);
+            editor.setGravity(Gravity.TOP | Gravity.START);
+            TypedArray a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
+            try {
+                int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocBackground, /*default color*/ 0);
+                editor.setBackgroundColor(colorResource);
+            } finally {
+                a.recycle();
+            }
+
+            a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
+            try {
+                int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocText, /*default color*/ 0);
+                editor.setTextColor(colorResource);
+            } finally {
+                a.recycle();
+            }
+
+
+            editor.setLayerType(LAYER_TYPE_SOFTWARE, new TextPaint());
+            rootView.addView(editor);
+
+            editor.init(this);
+            editor.setReadOnly(isReadOnly);
+
+            FastScrollerView mFastScrollerView = new FastScrollerView(context);
+            mFastScrollerView.setId(R.id.fastScrollerView);
+            RelativeLayout.LayoutParams fastParam = new RelativeLayout.LayoutParams(30, LayoutParams.MATCH_PARENT);
+            fastParam.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, TRUE);
+            mFastScrollerView.setLayoutParams(fastParam);
+            rootView.addView(mFastScrollerView);
+            mFastScrollerView.link(editor); //подключаем FastScroller к редактору
+
+            gutterView.link(editor, lineNumbers); //подключаем Gutter к редактору
+            LinesCollection lines = new LinesCollection();
+            lines.add(0, 0);
+            setLanguage(LanguageProvider.getLanguage(lang)); //ставим язык
+            setText(code, 1); //заполняем поле текстом
+            setLineStartsList(lines); //подгружаем линии
+            refreshEditor(); //подключаем все настройки
+            editor.enableUndoRedoStack();
+
+
+            ExtendedKeyboard recyclerView = new ExtendedKeyboard(context);
+            recyclerView.setId(R.id.recyclerView);
+            RelativeLayout.LayoutParams recyclerViewParam = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 40);
+
+            recyclerViewParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, TRUE);
+            recyclerView.setPadding(45, 0, 0, 0);
+            recyclerView.setLayoutParams(recyclerViewParam);
+            rootView.addView(recyclerView);
+            addView(rootView);
+            recyclerView.setListener((view, symbol) -> {
+                        if (symbol.getShowText().endsWith("End")) {
+                            String text = editor.getText().toString();
+                            int x = text.indexOf("\n", editor.getSelectionStart());
+                            if (x == -1) {
+                                x = text.length();
+                            }
+                            editor.setSelection(x);
+
+                        } else {
+                            editor.getText().insert(editor.getSelectionStart(), symbol.getWriteText());
+                        }
+
+                    }
+            );
+        } catch (Exception ex) {
+            ex.getMessage();
+        }
     }
 
-    public void initEditor(String code,String lang){
+    public void initEditor(String code, String lang) {
         setText(code, 1);
         setLanguage(LanguageProvider.getLanguage(lang));
     }

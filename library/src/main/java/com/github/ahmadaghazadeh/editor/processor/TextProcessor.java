@@ -1207,6 +1207,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
      */
     public void setReadOnly(boolean readOnly) {
         setFocusable(!readOnly);
+        setEnabled(!readOnly);
         setFocusableInTouchMode(!readOnly);
     }
 
