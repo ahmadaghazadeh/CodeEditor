@@ -59,8 +59,8 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         init(context, null);
     }
 
-    @BindingAdapter(value = {"code", "lang"},requireAll = false)
-    public static void setCodeView(CodeEditor view, MutableLiveData<String> code, MutableLiveData<String> lang) {
+    @BindingAdapter(value = {"code", "lang","isReadOnly"},requireAll = false)
+    public static void setCodeView(CodeEditor view, MutableLiveData<String> code, MutableLiveData<String> lang,boolean isReadOnly) {
         if (view == null) {
             return;
         }
@@ -70,6 +70,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         if (lang != null) {
             view.setLanguage(LanguageProvider.getLanguage(lang.getValue()));
         }
+        view.setReadOnly(isReadOnly);
 
     }
 
