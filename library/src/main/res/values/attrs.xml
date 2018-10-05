@@ -22,11 +22,11 @@
 
     <attr name="code" format="string" />
 
-    <attr name="langName" format="string|enum"/>
+    <attr name="lang" format="string|enum"/>
 
     <declare-styleable name="CodeEditor">
         <attr name="code" />
-        <attr name="langName"  />
+        <attr name="lang"  />
     </declare-styleable>
 
     <declare-styleable name="ThemeAttributes">
