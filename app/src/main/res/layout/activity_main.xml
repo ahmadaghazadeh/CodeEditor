@@ -16,6 +16,7 @@
 
 
         <com.github.ahmadaghazadeh.editor.widget.CodeEditor
+            android:id="@+id/editor"
             bind:isReadOnly="@{false}"
             bind:code="@{viewModel.code}"
             bind:lang="@{viewModel.lang}"

@@ -11,6 +11,7 @@ import android.support.annotation.RequiresApi;
 import android.support.annotation.WorkerThread;
 import android.text.Editable;
 import android.text.TextPaint;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.RelativeLayout;
@@ -38,7 +39,33 @@ public class CodeEditor extends RelativeLayout implements Serializable {
     private ExtendedKeyboard recyclerView;
     boolean isReadOnly = false;
     boolean isShowExtendedKeyboard = false;
+    private ICodeEditorTextChange codeEditorTextChange;
     private boolean isDirty; //На данный момент не используется
+
+    public interface ICodeEditorTextChange{
+        void onTextChange(String str);
+    }
+    public void setOnTextChange(ICodeEditorTextChange onTextChange){
+        codeEditorTextChange=onTextChange;
+        editor.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(codeEditorTextChange!=null){
+                    codeEditorTextChange.onTextChange(s.toString());
+                }
+            }
+        });
+    }
 
     public CodeEditor(Context context) {
         super(context);
