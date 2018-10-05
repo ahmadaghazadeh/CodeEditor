@@ -39,12 +39,13 @@ dependencies {
 ...
 
 
-       <com.github.ahmadaghazadeh.editor.widget.CodeEditor
-              bind:isReadOnly="@{true}"
-              bind:code="@{viewModel.code}"
-              bind:lang="@{viewModel.lang}"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"/>
+        <com.github.ahmadaghazadeh.editor.widget.CodeEditor
+            bind:isReadOnly="@{true}"
+            bind:code="@{viewModel.code}"
+            bind:lang="@{viewModel.lang}"
+            bind:isShowExtendedKeyboard="@{false}"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
 
 ...
@@ -59,6 +60,7 @@ dependencies {
             bind:code="<html></html>"
             bind:lang="html"
             bind:isReadOnly="true"
+             bind:isShowExtendedKeyboard="false"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
