@@ -10,22 +10,44 @@
             type="com.github.ahmadaghazadeh.sample.CodeModel" />
 
     </data>
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
 
         <com.github.ahmadaghazadeh.editor.widget.CodeEditor
             android:id="@+id/editor"
-            bind:isReadOnly="@{false}"
-            bind:code="@{viewModel.code}"
-            bind:lang="@{viewModel.lang}"
-            bind:isShowExtendedKeyboard="@{true}"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="100dp"
+            bind:code="@{viewModel.code}"
+            bind:isReadOnly="@{false}"
+            bind:isShowExtendedKeyboard="@{true}"
+            bind:lang="@{viewModel.lang}"
+            bind:layout_constraintBottom_toBottomOf="parent" />
+
+        <com.github.ahmadaghazadeh.editor.widget.CodeEditor
+            android:id="@+id/editor1"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            bind:code="@{viewModel.code}"
+            bind:isReadOnly="@{false}"
+            bind:isShowExtendedKeyboard="@{true}"
+            bind:lang="@{viewModel.lang}" />
 
 
-    </android.support.constraint.ConstraintLayout>
+        <com.github.ahmadaghazadeh.editor.widget.CodeEditor
+            android:id="@+id/editor2"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            bind:code="@{viewModel.code}"
+            bind:isReadOnly="@{false}"
+            bind:isShowExtendedKeyboard="@{true}"
+            bind:lang="@{viewModel.lang}" />
+
+
+
+    </LinearLayout>
 
 </layout>
 

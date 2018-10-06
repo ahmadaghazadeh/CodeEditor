@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -28,7 +31,7 @@ import com.github.ahmadaghazadeh.editor.processor.utils.ITextProcessorSetting;
 
 import java.io.Serializable;
 
-public class CodeEditor extends RelativeLayout implements Serializable {
+public class CodeEditor extends RelativeLayout  {
     RelativeLayout rootView;
     private Context context;
     private TextProcessor editor;
@@ -42,11 +45,13 @@ public class CodeEditor extends RelativeLayout implements Serializable {
     private ICodeEditorTextChange codeEditorTextChange;
     private boolean isDirty; //На данный момент не используется
 
-    public interface ICodeEditorTextChange{
+
+    public interface ICodeEditorTextChange {
         void onTextChange(String str);
     }
-    public void setOnTextChange(ICodeEditorTextChange onTextChange){
-        codeEditorTextChange=onTextChange;
+
+    public void setOnTextChange(ICodeEditorTextChange onTextChange) {
+        codeEditorTextChange = onTextChange;
         editor.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -60,7 +65,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(codeEditorTextChange!=null){
+                if (codeEditorTextChange != null) {
                     codeEditorTextChange.onTextChange(s.toString());
                 }
             }
@@ -89,7 +94,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
         init(context, null);
     }
 
-    @BindingAdapter(value = {"code", "lang", "isReadOnly","isShowExtendedKeyboard"})
+    @BindingAdapter(value = {"code", "lang", "isReadOnly", "isShowExtendedKeyboard"})
     public static void setCodeView(CodeEditor view, MutableLiveData<String> code, MutableLiveData<String> lang,
                                    boolean isReadOnly,
                                    boolean isShowExtendedKeyboard) {
@@ -132,10 +137,8 @@ public class CodeEditor extends RelativeLayout implements Serializable {
             RelativeLayout.LayoutParams rootViewParam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
             rootView = new RelativeLayout(context);
-            rootView.removeAllViews();
             rootView.setLayoutParams(rootViewParam);
             GutterView gutterView = new GutterView(context);
-            gutterView.setId(R.id.gutterView);
             RelativeLayout.LayoutParams paramsGutter = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
             paramsGutter.alignWithParent = true;
             gutterView.setLayoutParams(paramsGutter);
@@ -143,7 +146,6 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
 
             editor = new TextProcessor(context);
-            editor.setId(R.id.editor);
             RelativeLayout.LayoutParams paramsTxtprocessor = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
             editor.setLayoutParams(paramsTxtprocessor);
             editor.setScrollBarStyle(SCROLLBARS_OUTSIDE_INSET);
@@ -158,7 +160,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
             a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
             try {
-                int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocText,getResources().getColor(R.color.colorDocText));
+                int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocText, getResources().getColor(R.color.colorDocText));
                 editor.setTextColor(colorResource);
             } finally {
                 a.recycle();
@@ -172,7 +174,6 @@ public class CodeEditor extends RelativeLayout implements Serializable {
             editor.setReadOnly(isReadOnly);
 
             FastScrollerView mFastScrollerView = new FastScrollerView(context);
-            mFastScrollerView.setId(R.id.fastScrollerView);
             RelativeLayout.LayoutParams fastParam = new RelativeLayout.LayoutParams(30, LayoutParams.MATCH_PARENT);
             fastParam.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, TRUE);
             mFastScrollerView.setLayoutParams(fastParam);
@@ -190,7 +191,6 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
 
             recyclerView = new ExtendedKeyboard(context);
-            recyclerView.setId(R.id.recyclerView);
             RelativeLayout.LayoutParams recyclerViewParam = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 40);
 
             recyclerViewParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, TRUE);
