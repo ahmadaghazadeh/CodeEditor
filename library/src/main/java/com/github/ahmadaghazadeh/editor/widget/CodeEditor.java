@@ -109,7 +109,7 @@ public class CodeEditor extends RelativeLayout implements Serializable {
 
     private void init(Context context, AttributeSet attrs) {
         try {
-
+            removeAllViews();
             this.context = context;
             initEditor();
             String code = "";
