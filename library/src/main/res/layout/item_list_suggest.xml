@@ -8,13 +8,14 @@
     android:padding="@dimen/padding_small">
 
     <TextView
-        android:textColor="@color/colorDocText"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:background="@color/white"
+        android:textColor="@color/textDarkPrimary"
         android:id="@+id/suggestion_title"
         android:layout_width="match_parent"
         android:layout_height="@dimen/suggestion_height"
         android:layout_centerVertical="true"
-        android:paddingLeft="@dimen/padding_almost_medium"
-        android:paddingRight="@dimen/padding_almost_medium"
         android:ellipsize="end"
         android:gravity="start|center_vertical"
         android:singleLine="true"

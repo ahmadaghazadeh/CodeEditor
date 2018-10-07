@@ -24,7 +24,7 @@
 
     <color name="fexplorer_color_folder">#ffbb33</color>
     <color name="fexplorer_color_file">#717171</color>
-
+    <color name="textDarkPrimary">#DE000000</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="gray">#838383</color>
