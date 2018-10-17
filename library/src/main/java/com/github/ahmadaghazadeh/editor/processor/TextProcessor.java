@@ -86,42 +86,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     private static final String TAG = TextProcessor.class.getSimpleName();
 
     private static final String TAB_STR = "    "; //4 spaces
-
-    private ITextProcessorSetting defaultSetting;
-    private CodeEditor codeEditor;
-    private ClipboardManager mClipboardManager;
-    private Context mContext;
-
-
-    private Scroller mScroller;
-    private OnScrollChangedListener[] mScrollChangedListeners;
-    private VelocityTracker mVelocityTracker;
-    private LineUtils mLineUtils;
-    private TypedValue mColorSearchSpan;
-
-    private TextChange mUpdateLastChange;
-    private boolean isDoingUndoRedo = false;
-    private boolean isAutoIndenting = false;
-
-    private UndoStack mRedoStack;
-    private UndoStack mUndoStack;
-
-    private StylePaint mLineNumberPaint;
-    private StylePaint mGutterBackgroundPaint;
-    private StylePaint mLinePaint;
-    private StylePaint mSelectedLinePaint;
-
-    private StyleSpan mSyntaxNumbers;
-    private StyleSpan mSyntaxSymbols;
-    private StyleSpan mSyntaxBrackets;
-    private StyleSpan mSyntaxKeywords;
-    private StyleSpan mSyntaxMethods;
-    private StyleSpan mSyntaxStrings;
-    private StyleSpan mSyntaxComments;
-
-    private BackgroundColorSpan mOpenBracketSpan;
-    private BackgroundColorSpan mClosedBracketSpan;
-
     boolean mShowLineNumbers = true;
     boolean mSyntaxHighlight = true;
     boolean mBracketMatching = true;
@@ -130,32 +94,54 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     boolean mPinchZoom = true;
     boolean mIndentLine = true;
     boolean mInsertBracket = true;
-
     int mOnTextChangedChangeEnd;
     int mOnTextChangedChangeStart;
     String mOnTextChangedNewText;
-
     int mAddedTextCount;
     String mNewText;
     String mOldText;
-
     float mPreviousTouchX = 0.0f;
     float mPreviousTouchY = 0.0f;
     int mMaximumVelocity;
-
     int mGutterWidth;
     int mLineNumberDigitCount = 0;
     int mCharHeight = 0;
     int mIdealMargin;
-
     int mTopDirtyLine = 0;
     int mBottomDirtyLine = 0;
-
     boolean zoomPinch = false;
     float zoomPinchFactor;
     float textSize;
+    int h;
+    private ITextProcessorSetting defaultSetting;
+    private CodeEditor codeEditor;
+    private ClipboardManager mClipboardManager;
+    private Context mContext;
+    private Scroller mScroller;
+    private OnScrollChangedListener[] mScrollChangedListeners;
+    private VelocityTracker mVelocityTracker;
+    private LineUtils mLineUtils;
+    private TypedValue mColorSearchSpan;
+    private TextChange mUpdateLastChange;
+    private boolean isDoingUndoRedo = false;
+    private boolean isAutoIndenting = false;
+    private UndoStack mRedoStack;
+    private UndoStack mUndoStack;
+    private StylePaint mLineNumberPaint;
+    private StylePaint mGutterBackgroundPaint;
+    private StylePaint mLinePaint;
+    private StylePaint mSelectedLinePaint;
+    private StyleSpan mSyntaxNumbers;
+    private StyleSpan mSyntaxSymbols;
+    private StyleSpan mSyntaxBrackets;
+    private StyleSpan mSyntaxKeywords;
+    private StyleSpan mSyntaxMethods;
+    private StyleSpan mSyntaxStrings;
+    private StyleSpan mSyntaxComments;
+    private BackgroundColorSpan mOpenBracketSpan;
 
     //region CONSTRUCTOR
+    private BackgroundColorSpan mClosedBracketSpan;
 
     public TextProcessor(Context context) {
         super(context);
@@ -167,14 +153,45 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         mContext = context;
     }
 
+    //endregion CONSTRUCTOR
+
+    //region INIT
+
     public TextProcessor(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
     }
 
-    //endregion CONSTRUCTOR
-
-    //region INIT
+    /**
+     * Очистка текста от спанов разного типа.
+     *
+     * @param e               - текущий текст (Editable).
+     * @param foregroundSpans - очищать foreground-спаны?
+     * @param backgroundSpans - очищать background-спаны?
+     * @param syntaxSpans     - очищать syntax-спаны?
+     */
+    @WorkerThread
+    protected static void clearSpans(Editable e, boolean foregroundSpans,
+                                     boolean backgroundSpans, boolean syntaxSpans) {
+        if (foregroundSpans) { //remove foreground color spans
+            ForegroundColorSpan spans[] = e.getSpans(0, e.length(), ForegroundColorSpan.class);
+            for (ForegroundColorSpan span : spans) {
+                e.removeSpan(span);
+            }
+        }
+        if (backgroundSpans) { //remove background color spans
+            BackgroundColorSpan spans[] = e.getSpans(0, e.length(), BackgroundColorSpan.class);
+            for (BackgroundColorSpan span : spans) {
+                e.removeSpan(span);
+            }
+        }
+        if (syntaxSpans) { //remove syntax color spans
+            SyntaxHighlightSpan[] spans = e.getSpans(0, e.length(), SyntaxHighlightSpan.class);
+            for (SyntaxHighlightSpan span : spans) {
+                e.removeSpan(span);
+            }
+        }
+    }
 
     public void init(CodeEditor codeEditor) {
 
@@ -364,6 +381,10 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         setOnKeyListener(this);
     }
 
+    //endregion INIT
+
+    //region BASE_METHODS
+
     protected void postInit() {
         postInvalidate();
         refreshDrawableState();
@@ -374,10 +395,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         mCharHeight = (int) Math.ceil(getPaint().getFontSpacing());
         mCharHeight = (int) getPaint().measureText("M");
     }
-
-    //endregion INIT
-
-    //region BASE_METHODS
 
     @Override
     public void setTextSize(float textSize) {
@@ -409,40 +426,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         }
         if (mAutoComplete) //Suggestions
             onDropDownChangeSize(w, h);
-    }
-
-    protected final class TextChangeWatcher implements TextWatcher {
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            mAddedTextCount -= count;
-            mOldText = s.subSequence(start, start + count).toString();
-            updateDocumentBeforeTextChanged(start, count);
-            updateUndoRedoBeforeTextChanged(s, start, count);
-            abortFling();
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            mAddedTextCount += count;
-            mNewText = s.subSequence(start, start + count).toString();
-            generalOnTextChanged(start, count);
-            updateDocumentOnTextChanged(s, start, count);
-            updateUndoRedoOnTextChanged(s, start, count);
-            mOldText = "";
-            mNewText = "";
-            if (mAutoComplete)
-                onPopupChangePosition();
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            mAddedTextCount = 0;
-            //Очищаем старые syntax-спаны (и background-спаны), чтобы наложить новые
-            clearSpans(editable, false, true, true);
-            syntaxHighlight(getLayout(), getEditableText(), getLineHeight(),
-                    getLineCount(), getScrollY(), getHeight());
-        }
     }
 
     private void updateDocumentBeforeTextChanged(int start, int count) {
@@ -556,14 +539,14 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         }
     }
 
+    //endregion BASE_METHODS
+
+    //region INDENTATION
+
     @Override
     public boolean onKey(View view, int keyCode, KeyEvent event) {
         return false;
     }
-
-    //endregion BASE_METHODS
-
-    //region INDENTATION
 
     private void generalOnTextChanged(int start, int count) {
         if (!isDoingUndoRedo && !isAutoIndenting) {
@@ -667,6 +650,10 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         return getIndentationForLine(codeEditor.getLinesCollection().getLineForIndex(offset));
     }
 
+    //endregion INDENTATION
+
+    //region SUGGESTION_METHODS
+
     public String getIndentationForLine(int line) {
         LineObject l = codeEditor.getLinesCollection().getLine(line);
         if (l == null) {
@@ -683,10 +670,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         }
         return getText().subSequence(start, i).toString();
     }
-
-    //endregion INDENTATION
-
-    //region SUGGESTION_METHODS
 
     @Override
     public void showDropDown() {
@@ -730,7 +713,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
         // 0.5 height of screen
         setDropDownHeight((int) (h * 0.5f));
-
+        this.h = h;
         //change position
         onPopupChangePosition();
     }
@@ -739,6 +722,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         try {
             Layout layout = getLayout();
             if (layout != null) {
+
                 int pos = getSelectionStart();
                 int line = layout.getLineForOffset(pos);
                 int baseline = layout.getLineBaseline(line);
@@ -755,14 +739,38 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
                 int tmp = offsetVertical + getDropDownHeight() + mCharHeight;
                 if (tmp < heightVisible) {
-                    tmp = -(offsetVertical + mCharHeight) + ((offsetVertical / mCharHeight) * (mCharHeight / 2));
+                    tmp = -(this.h + mCharHeight) + ((offsetVertical / mCharHeight) * (mCharHeight / 2));
                     setDropDownVerticalOffset(tmp);
+                    ((Activity)(mContext)).setTitle("1 tmp:"+tmp +" h :"+this.h);
                 } else {
-                    tmp = offsetVertical - getDropDownHeight() - mCharHeight;
+                    tmp = -this.h + getDropDownHeight() - mCharHeight;
                     setDropDownVerticalOffset(tmp);
+                    ((Activity)(mContext)).setTitle("2 tmp:"+tmp +" h :"+this.h);
 
-                    ((Activity)(getContext())).setTitle(" tmp:"+tmp);
                 }
+
+//                int pos = getSelectionStart();
+//                int line = layout.getLineForOffset(pos);
+//                int baseline = layout.getLineBaseline(line);
+//                int ascent = layout.getLineAscent(line);
+//
+//                float x = layout.getPrimaryHorizontal(pos);
+//                float y = baseline + ascent;
+//
+//                int offsetHorizontal = (int) x + mGutterWidth;
+//                setDropDownHorizontalOffset(offsetHorizontal);
+//
+//                //    int heightVisible = getHeightVisible();
+//                int offsetVertical = (int) ((y + mCharHeight) - getScrollY());
+//
+//                int tmp = offsetVertical + getDropDownHeight() + mCharHeight;
+////                if (tmp < heightVisible) {
+//                tmp = -(offsetVertical + mCharHeight) + ((offsetVertical / mCharHeight) * (mCharHeight / 2));
+//                setDropDownVerticalOffset(tmp);
+////                } else {
+////                    tmp = offsetVertical - getDropDownHeight() - mCharHeight;
+////                    setDropDownVerticalOffset(tmp);
+////                }
 
             }
         } catch (Exception e) {
@@ -972,37 +980,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     //endregion LINE_NUMBERS_METHODS
 
     //region SPAN_METHODS
-
-    /**
-     * Очистка текста от спанов разного типа.
-     *
-     * @param e               - текущий текст (Editable).
-     * @param foregroundSpans - очищать foreground-спаны?
-     * @param backgroundSpans - очищать background-спаны?
-     * @param syntaxSpans     - очищать syntax-спаны?
-     */
-    @WorkerThread
-    protected static void clearSpans(Editable e, boolean foregroundSpans,
-                                     boolean backgroundSpans, boolean syntaxSpans) {
-        if (foregroundSpans) { //remove foreground color spans
-            ForegroundColorSpan spans[] = e.getSpans(0, e.length(), ForegroundColorSpan.class);
-            for (ForegroundColorSpan span : spans) {
-                e.removeSpan(span);
-            }
-        }
-        if (backgroundSpans) { //remove background color spans
-            BackgroundColorSpan spans[] = e.getSpans(0, e.length(), BackgroundColorSpan.class);
-            for (BackgroundColorSpan span : spans) {
-                e.removeSpan(span);
-            }
-        }
-        if (syntaxSpans) { //remove syntax color spans
-            SyntaxHighlightSpan[] spans = e.getSpans(0, e.length(), SyntaxHighlightSpan.class);
-            for (SyntaxHighlightSpan span : spans) {
-                e.removeSpan(span);
-            }
-        }
-    }
 
     /**
      * Процесс подсветки синтаксиса.
@@ -1227,10 +1204,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         getText().setSpan(mClosedBracketSpan, j, j + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
-    //endregion SPAN_METHODS
-
-    //region PINCH_ZOOM
-
     protected boolean pinchZoom(MotionEvent ev) {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_CANCEL:
@@ -1254,6 +1227,10 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         return zoomPinch;
     }
 
+    //endregion SPAN_METHODS
+
+    //region PINCH_ZOOM
+
     protected float getDistanceBetweenTouches(MotionEvent ev) {
         float xx = ev.getX(1) - ev.getX(0);
         float yy = ev.getY(1) - ev.getY(0);
@@ -1267,10 +1244,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
             textSize = 20; //maximum
     }
 
-    //endregion PINCH_ZOOM
-
-    //region DOC_METHODS
-
     /**
      * Отключаем фокусировку на редакторе, нажатия не будут засчитываться,
      * однако скроллинг будет продолжать работать.
@@ -1281,6 +1254,10 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         setFocusable(!readOnly);
         setFocusableInTouchMode(!readOnly);
     }
+
+    //endregion PINCH_ZOOM
+
+    //region DOC_METHODS
 
     /**
      * Метод для переключения подсветки синтаксиса.
@@ -1420,10 +1397,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         }
     }
 
-    //endregion DOC_METHODS
-
-    //region METHODS
-
     public void insert(CharSequence delta) {
         int selectionStart = getSelectionStart();
         int selectionEnd = getSelectionEnd();
@@ -1438,6 +1411,10 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
             Logger.error(TAG, e);
         }
     }
+
+    //endregion DOC_METHODS
+
+    //region METHODS
 
     public void cut() {
         Editable selectedText = getSelectedText();
@@ -1630,6 +1607,40 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         //Очищаем спаны из-за смены текста
         clearSpans(getEditableText(), false, true, true);
         setText(getText().toString().replaceAll(what, with));
+    }
+
+    protected final class TextChangeWatcher implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            mAddedTextCount -= count;
+            mOldText = s.subSequence(start, start + count).toString();
+            updateDocumentBeforeTextChanged(start, count);
+            updateUndoRedoBeforeTextChanged(s, start, count);
+            abortFling();
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            mAddedTextCount += count;
+            mNewText = s.subSequence(start, start + count).toString();
+            generalOnTextChanged(start, count);
+            updateDocumentOnTextChanged(s, start, count);
+            updateUndoRedoOnTextChanged(s, start, count);
+            mOldText = "";
+            mNewText = "";
+            if (mAutoComplete)
+                onPopupChangePosition();
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            mAddedTextCount = 0;
+            //Очищаем старые syntax-спаны (и background-спаны), чтобы наложить новые
+            clearSpans(editable, false, true, true);
+            syntaxHighlight(getLayout(), getEditableText(), getLineHeight(),
+                    getLineCount(), getScrollY(), getHeight());
+        }
     }
 
     //endregion METHODS
