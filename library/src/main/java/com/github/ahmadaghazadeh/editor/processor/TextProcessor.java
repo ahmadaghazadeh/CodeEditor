@@ -19,6 +19,7 @@
 
 package com.github.ahmadaghazadeh.editor.processor;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -204,16 +205,16 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     protected void initTheme() {
         TypedValue colorAttr;
 
-        Resources.Theme theme=mContext.getTheme();
+        Resources.Theme theme = mContext.getTheme();
 
         mLineNumberPaint = new StylePaint(true, false);
         colorAttr = new TypedValue();
-        @ColorInt int color=getContext().getResources().getColor(R.color.colorNumbersText);
-        if(!theme.resolveAttribute(R.attr.colorNumbersText, colorAttr, true)){
+        @ColorInt int color = getContext().getResources().getColor(R.color.colorNumbersText);
+        if (!theme.resolveAttribute(R.attr.colorNumbersText, colorAttr, true)) {
             theme.resolveAttribute(R.attr.colorNumbersText, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.colorNumbersText);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.colorNumbersText);
         }
         mLineNumberPaint.setColor(color);
         mLineNumberPaint.setTextAlign(StylePaint.Align.RIGHT);
@@ -227,21 +228,21 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         mGutterBackgroundPaint = new StylePaint(false, false);
         colorAttr = new TypedValue();
 
-        if(!theme.resolveAttribute(R.attr.colorNumbersBackground, colorAttr, true)){
+        if (!theme.resolveAttribute(R.attr.colorNumbersBackground, colorAttr, true)) {
             theme.resolveAttribute(R.attr.colorNumbersBackground, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.colorNumbersBackground);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.colorNumbersBackground);
         }
         mGutterBackgroundPaint.setColor(color);
 
         mSelectedLinePaint = new StylePaint(false, false);
 
-        if(!theme.resolveAttribute(R.attr.colorSelectedLine, colorAttr, true)){
+        if (!theme.resolveAttribute(R.attr.colorSelectedLine, colorAttr, true)) {
             theme.resolveAttribute(R.attr.colorSelectedLine, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.colorSelectedLine);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.colorSelectedLine);
         }
         mSelectedLinePaint.setColor(color);
 
@@ -249,85 +250,85 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
         mColorSearchSpan = new TypedValue();
 
-        if(!theme.resolveAttribute(R.attr.syntaxNumbers, colorAttr, true)){
+        if (!theme.resolveAttribute(R.attr.syntaxNumbers, colorAttr, true)) {
             theme.resolveAttribute(R.attr.syntaxNumbers, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.syntaxNumbers);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.syntaxNumbers);
         }
         mSyntaxNumbers = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
 
-        if(!theme.resolveAttribute(R.attr.syntaxSymbols, colorAttr, true)){
+        if (!theme.resolveAttribute(R.attr.syntaxSymbols, colorAttr, true)) {
             theme.resolveAttribute(R.attr.syntaxSymbols, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.syntaxSymbols);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.syntaxSymbols);
         }
 
         mSyntaxSymbols = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
 
-        if(!theme.resolveAttribute(R.attr.syntaxBrackets, colorAttr, true)){
+        if (!theme.resolveAttribute(R.attr.syntaxBrackets, colorAttr, true)) {
             theme.resolveAttribute(R.attr.syntaxBrackets, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.syntaxBrackets);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.syntaxBrackets);
         }
         mSyntaxBrackets = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
 
-        if(!theme.resolveAttribute(R.attr.syntaxKeywords, colorAttr, true)){
+        if (!theme.resolveAttribute(R.attr.syntaxKeywords, colorAttr, true)) {
             theme.resolveAttribute(R.attr.syntaxKeywords, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.syntaxKeywords);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.syntaxKeywords);
         }
         mSyntaxKeywords = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
 
-        if(!theme.resolveAttribute(R.attr.syntaxMethods, colorAttr, true)){
+        if (!theme.resolveAttribute(R.attr.syntaxMethods, colorAttr, true)) {
             theme.resolveAttribute(R.attr.syntaxMethods, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.syntaxMethods);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.syntaxMethods);
         }
 
         mSyntaxMethods = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
 
-        if(!theme.resolveAttribute(R.attr.syntaxStrings, colorAttr, true)){
+        if (!theme.resolveAttribute(R.attr.syntaxStrings, colorAttr, true)) {
             theme.resolveAttribute(R.attr.syntaxStrings, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.syntaxStrings);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.syntaxStrings);
         }
 
         mSyntaxStrings = new StyleSpan(color, false, false);
 
         colorAttr = new TypedValue();
 
-        if(!theme.resolveAttribute(R.attr.syntaxComments, colorAttr, true)){
+        if (!theme.resolveAttribute(R.attr.syntaxComments, colorAttr, true)) {
             theme.resolveAttribute(R.attr.syntaxComments, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.syntaxComments);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.syntaxComments);
         }
 
         mSyntaxComments = new StyleSpan(color, false, true);
 
         colorAttr = new TypedValue();
 
-        if(!theme.resolveAttribute(R.attr.colorBracketSpan, colorAttr, true)){
+        if (!theme.resolveAttribute(R.attr.colorBracketSpan, colorAttr, true)) {
             theme.resolveAttribute(R.attr.colorBracketSpan, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.colorBracketSpan);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.colorBracketSpan);
         }
 
         mOpenBracketSpan = new BackgroundColorSpan(color);
@@ -335,22 +336,22 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
         colorAttr = new TypedValue();
 
-        if(!theme.resolveAttribute(R.attr.colorCursor, colorAttr, true)){
+        if (!theme.resolveAttribute(R.attr.colorCursor, colorAttr, true)) {
             theme.resolveAttribute(R.attr.colorCursor, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.colorCursor);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.colorCursor);
         }
 
         setCursorColor(color); //Cursor Color
 
         colorAttr = new TypedValue();
-        color=getContext().getResources().getColor(R.color.colorSelection);
-        if(!theme.resolveAttribute(R.attr.colorSelection, colorAttr, true)){
+        color = getContext().getResources().getColor(R.color.colorSelection);
+        if (!theme.resolveAttribute(R.attr.colorSelection, colorAttr, true)) {
             theme.resolveAttribute(R.attr.colorSelection, colorAttr, true);
-            color=colorAttr.data;
-            if(color==0)
-                color=getContext().getResources().getColor(R.color.colorNumbersText);
+            color = colorAttr.data;
+            if (color == 0)
+                color = getContext().getResources().getColor(R.color.colorNumbersText);
         }
         setHighlightColor(color); //Selection Color
     }
@@ -749,17 +750,19 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 int offsetHorizontal = (int) x + mGutterWidth;
                 setDropDownHorizontalOffset(offsetHorizontal);
 
-            //    int heightVisible = getHeightVisible();
+                int heightVisible = getHeightVisible();
                 int offsetVertical = (int) ((y + mCharHeight) - getScrollY());
 
                 int tmp = offsetVertical + getDropDownHeight() + mCharHeight;
-//                if (tmp < heightVisible) {
-                tmp = -(offsetVertical + mCharHeight) + ((offsetVertical / mCharHeight) * (mCharHeight / 2));
-                setDropDownVerticalOffset(tmp);
-//                } else {
-//                    tmp = offsetVertical - getDropDownHeight() - mCharHeight;
-//                    setDropDownVerticalOffset(tmp);
-//                }
+                if (tmp < heightVisible) {
+                    tmp = -(offsetVertical + mCharHeight) + ((offsetVertical / mCharHeight) * (mCharHeight / 2));
+                    setDropDownVerticalOffset(tmp);
+                } else {
+                    tmp = offsetVertical - getDropDownHeight() - mCharHeight;
+                    setDropDownVerticalOffset(tmp);
+
+                    ((Activity)(getContext())).setTitle(" tmp:"+tmp);
+                }
 
             }
         } catch (Exception e) {

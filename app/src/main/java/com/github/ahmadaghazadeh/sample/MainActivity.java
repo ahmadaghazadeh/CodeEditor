@@ -17,9 +17,9 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding mViewDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mViewDataBinding.setVariable(BR.viewModel, codeModel);
         mViewDataBinding.setLifecycleOwner(this);
-        mViewDataBinding.editor.setOnTextChange(str -> {
-            Toast.makeText(this,str,Toast.LENGTH_LONG).show();
-        });
+//        mViewDataBinding.editor.setOnTextChange(str -> {
+//            Toast.makeText(this,str,Toast.LENGTH_LONG).show();
+//        });
 
     }
 

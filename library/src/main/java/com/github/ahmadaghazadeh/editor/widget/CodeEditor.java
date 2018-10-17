@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -16,7 +13,11 @@ import android.text.Editable;
 import android.text.TextPaint;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.github.ahmadaghazadeh.editor.R;
@@ -29,10 +30,11 @@ import com.github.ahmadaghazadeh.editor.processor.language.LanguageProvider;
 import com.github.ahmadaghazadeh.editor.processor.utils.DefaultSetting;
 import com.github.ahmadaghazadeh.editor.processor.utils.ITextProcessorSetting;
 
-import java.io.Serializable;
-
-public class CodeEditor extends RelativeLayout  {
-    RelativeLayout rootView;
+public class CodeEditor extends FrameLayout {
+    FrameLayout rootView;
+    boolean isReadOnly = false;
+    boolean isShowExtendedKeyboard = false;
+    int preHeight = 0;
     private Context context;
     private TextProcessor editor;
     private Language language;
@@ -40,37 +42,8 @@ public class CodeEditor extends RelativeLayout  {
     private Editable text;
     private ITextProcessorSetting setting;
     private ExtendedKeyboard recyclerView;
-    boolean isReadOnly = false;
-    boolean isShowExtendedKeyboard = false;
     private ICodeEditorTextChange codeEditorTextChange;
     private boolean isDirty; //На данный момент не используется
-
-
-    public interface ICodeEditorTextChange {
-        void onTextChange(String str);
-    }
-
-    public void setOnTextChange(ICodeEditorTextChange onTextChange) {
-        codeEditorTextChange = onTextChange;
-        editor.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (codeEditorTextChange != null) {
-                    codeEditorTextChange.onTextChange(s.toString());
-                }
-            }
-        });
-    }
 
     public CodeEditor(Context context) {
         super(context);
@@ -81,7 +54,6 @@ public class CodeEditor extends RelativeLayout  {
         super(context, attrs);
         init(context, attrs);
     }
-
 
     public CodeEditor(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -112,9 +84,31 @@ public class CodeEditor extends RelativeLayout  {
 
     }
 
+    public void setOnTextChange(ICodeEditorTextChange onTextChange) {
+        codeEditorTextChange = onTextChange;
+        editor.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (codeEditorTextChange != null) {
+                    codeEditorTextChange.onTextChange(s.toString());
+                }
+            }
+        });
+    }
+
     private void init(Context context, AttributeSet attrs) {
         try {
-            removeAllViews();
+            // removeAllViews();
             this.context = context;
             initEditor();
             String code = "";
@@ -134,22 +128,24 @@ public class CodeEditor extends RelativeLayout  {
                 a.recycle();
 
             }
-            RelativeLayout.LayoutParams rootViewParam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-
-            rootView = new RelativeLayout(context);
+            FrameLayout.LayoutParams rootViewParam = new FrameLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            rootViewParam.gravity = Gravity.BOTTOM;
+            rootView = new FrameLayout(context);
             rootView.setLayoutParams(rootViewParam);
             GutterView gutterView = new GutterView(context);
-            RelativeLayout.LayoutParams paramsGutter = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-            paramsGutter.alignWithParent = true;
+            LinearLayout.LayoutParams paramsGutter = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+            //paramsGutter.alignWithParent = true;
+            paramsGutter.gravity = Gravity.START;
             gutterView.setLayoutParams(paramsGutter);
             rootView.addView(gutterView);
 
 
             editor = new TextProcessor(context);
-            RelativeLayout.LayoutParams paramsTxtprocessor = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            FrameLayout.LayoutParams paramsTxtprocessor = new FrameLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
             editor.setLayoutParams(paramsTxtprocessor);
             editor.setScrollBarStyle(SCROLLBARS_OUTSIDE_INSET);
             editor.setGravity(Gravity.TOP | Gravity.START);
+
             TypedArray a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.ThemeAttributes, 0, 0);
             try {
                 int colorResource = a.getColor(R.styleable.ThemeAttributes_colorDocBackground, getResources().getColor(R.color.colorDocBackground));
@@ -174,8 +170,10 @@ public class CodeEditor extends RelativeLayout  {
             editor.setReadOnly(isReadOnly);
 
             FastScrollerView mFastScrollerView = new FastScrollerView(context);
-            RelativeLayout.LayoutParams fastParam = new RelativeLayout.LayoutParams(30, LayoutParams.MATCH_PARENT);
-            fastParam.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, TRUE);
+            FrameLayout.LayoutParams fastParam = new FrameLayout.LayoutParams(30, LayoutParams.MATCH_PARENT);
+            //fastParam.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, TRUE);
+            fastParam.gravity = Gravity.END;
+
             mFastScrollerView.setLayoutParams(fastParam);
             rootView.addView(mFastScrollerView);
             mFastScrollerView.link(editor); //подключаем FastScroller к редактору
@@ -189,15 +187,27 @@ public class CodeEditor extends RelativeLayout  {
             refreshEditor(); //подключаем все настройки
             editor.enableUndoRedoStack();
 
-
             recyclerView = new ExtendedKeyboard(context);
-            RelativeLayout.LayoutParams recyclerViewParam = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 40);
 
-            recyclerViewParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, TRUE);
-            recyclerView.setPadding(45, 0, 0, 0);
-            recyclerView.setLayoutParams(recyclerViewParam);
-            rootView.addView(recyclerView);
-            addView(rootView);
+
+            rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    int height = rootView.getHeight(); //height is ready
+                    if (preHeight != height) {
+
+                        FrameLayout.LayoutParams recyclerViewParam = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                        recyclerViewParam.setMargins(0, height - 100, 0, 0);
+                        recyclerView.setLayoutParams(recyclerViewParam);
+                        paramsTxtprocessor.setMargins(0, 0, 0, 100);
+                        editor.setLayoutParams(paramsTxtprocessor);
+                        preHeight = height ;
+                    }
+
+                }
+            });
+
+
             recyclerView.setListener((view, symbol) -> {
                         if (symbol.getShowText().endsWith("End")) {
                             String text = editor.getText().toString();
@@ -214,10 +224,38 @@ public class CodeEditor extends RelativeLayout  {
                     }
             );
             setShowExtendedKeyboard(isShowExtendedKeyboard);
+            rootView.addView(recyclerView);
+            addView(rootView);
+
         } catch (Exception ex) {
             ex.getMessage();
         }
     }
+
+
+//    public   int getScreenHeight() {
+//        int mRealSizeHeight=0;
+//        WindowManager windowManager =
+//                (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+//        final Display display = windowManager.getDefaultDisplay();
+//        Point outPoint = new Point();
+//        if (Build.VERSION.SDK_INT >= 19) {
+//            // include navigation bar
+//            display.getRealSize(outPoint);
+//        } else {
+//            // exclude navigation bar
+//            display.getSize(outPoint);
+//        }
+//        if (outPoint.y > outPoint.x) {
+//            mRealSizeHeight = outPoint.y;
+//            //mRealSizeWidth = outPoint.x;
+//        } else {
+//            mRealSizeHeight = outPoint.x;
+//            //mRealSizeWidth = outPoint.y;
+//        }
+//        return mRealSizeHeight;
+//    }
+
 
     public void setShowExtendedKeyboard(Boolean showExtendedKeyboard) {
         if (recyclerView != null) {
@@ -277,11 +315,11 @@ public class CodeEditor extends RelativeLayout  {
         return language;
     }
 
-    //region METHODS_DOC
-
     public void setLanguage(@Nullable Language language) {
         this.language = language;
     }
+
+    //region METHODS_DOC
 
     /**
      * Методы для редактора, чтобы менять их в "Runtime".
@@ -292,14 +330,14 @@ public class CodeEditor extends RelativeLayout  {
             editor.setReadOnly(readOnly);
     }
 
-    //endregion METHODS_DOC
-
-    //region LINES
-
     public void setSyntaxHighlight(boolean syntaxHighlight) {
         if (editor != null)
             editor.setSyntaxHighlight(syntaxHighlight);
     }
+
+    //endregion METHODS_DOC
+
+    //region LINES
 
     public void setLineStartsList(LinesCollection list) {
         lineNumbers = list;
@@ -380,10 +418,6 @@ public class CodeEditor extends RelativeLayout  {
         }
     }
 
-    //endregion LINES
-
-    //region METHODS
-
     public void setText(Editable text, int flag) {
         if (flag == 1) {
             this.text = text;
@@ -398,6 +432,10 @@ public class CodeEditor extends RelativeLayout  {
         replaceText(0, length, text);
         setDirty(false);
     }
+
+    //endregion LINES
+
+    //region METHODS
 
     public void insert(@NonNull CharSequence text) {
         if (editor != null)
@@ -494,6 +532,10 @@ public class CodeEditor extends RelativeLayout  {
 
     public void showToast(String string, boolean b) {
 
+    }
+
+    public interface ICodeEditorTextChange {
+        void onTextChange(String str);
     }
 
 

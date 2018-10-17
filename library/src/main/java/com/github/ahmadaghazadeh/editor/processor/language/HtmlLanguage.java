@@ -28,7 +28,7 @@ public class HtmlLanguage extends Language {
 
     private static final Pattern SYNTAX_NUMBERS = Pattern.compile("(\\b(\\d*[.]?\\d+)\\b)");
     private static final Pattern SYNTAX_SYMBOLS = Pattern.compile(
-            "(!|\\+|-|\\*|<|>|=|\\?|\\||:|%|&)");
+            "(!|\\+|-|\\*|=|\\?|\\||:|%|&)");
     private static final Pattern SYNTAX_BRACKETS = Pattern.compile("(\\(|\\)|\\{|\\}|\\[|\\])");
     private static final Pattern SYNTAX_KEYWORDS = Pattern.compile(
             "(?<=\\b)((break)|(continue)|(else)|(for)|(function)|(if)|(in)|(new)" +
