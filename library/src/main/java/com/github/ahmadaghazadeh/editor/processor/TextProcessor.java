@@ -25,6 +25,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -728,6 +729,13 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 int baseline = layout.getLineBaseline(line);
                 int ascent = layout.getLineAscent(line);
 
+                Rect bounds = new Rect();
+                Paint textPaint = getPaint();
+                String sample="A";
+                textPaint.getTextBounds(sample, 0, sample.length(), bounds);
+                int width = bounds.width()/sample.length();
+
+
                 float x = layout.getPrimaryHorizontal(pos);
                 float y = baseline + ascent;
 
@@ -738,16 +746,16 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 int offsetVertical = (int) ((y + mCharHeight) - getScrollY());
 
                 int tmp = offsetVertical + getDropDownHeight() + mCharHeight;
-                if (tmp < heightVisible) {
-                    tmp = -(this.h + mCharHeight) + ((offsetVertical / mCharHeight) * (mCharHeight / 2));
+                //if (tmp < heightVisible) {
+                    tmp = -h + ((offsetVertical*2 / (mCharHeight)) * (mCharHeight / 2))+(mCharHeight/2);
                     setDropDownVerticalOffset(tmp);
-                    ((Activity)(mContext)).setTitle("1 tmp:"+tmp +" h :"+this.h);
-                } else {
-                    tmp = -this.h + getDropDownHeight() - mCharHeight;
-                    setDropDownVerticalOffset(tmp);
-                    ((Activity)(mContext)).setTitle("2 tmp:"+tmp +" h :"+this.h);
+                    //((Activity)(mContext)).setTitle("ov :"+offsetVertical +" ch "+mCharHeight+" tmp"+tmp +"h "+h+"p:"+pos);
+//                } else {
+//                    tmp = offsetVertical - getDropDownHeight() - mCharHeight;
+//                    setDropDownVerticalOffset(tmp);
+//                    ((Activity)(mContext)).setTitle(" 2 tmp :"+tmp);
+//                }
 
-                }
 
 //                int pos = getSelectionStart();
 //                int line = layout.getLineForOffset(pos);

@@ -9,6 +9,13 @@ Ace text editor has been used for this purpose because it is feature-rich, fast,
 Please note that this library is currently supported on android API 15 and above.
 
 Integration with existing project
+
+### [Click For Play Video](https://youtu.be/lq-P1qwgU1Q)
+
+<div align="center">
+  <a href="https://youtu.be/lq-P1qwgU1Q"><img src="media/screenshot.png" alt="Play Video"></a>
+</div>
+
 ---
 
 ### Setup
