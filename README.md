@@ -3,7 +3,7 @@
 This is a text/code(Base From [ModPE IDE] ) editor meant for integration as a modular component of the overall UI.
 The aim is to provide a powerful editor that can be used just like any other View.
 
-Ace text editor has been used for this purpose because it is feature-rich, fast, and easy to modify and embed in applications.
+CodeEditor has been used for this purpose because it is feature-rich, fast, and easy to modify and embed in applications.
 
 
 Please note that this library is currently supported on android API 15 and above.
