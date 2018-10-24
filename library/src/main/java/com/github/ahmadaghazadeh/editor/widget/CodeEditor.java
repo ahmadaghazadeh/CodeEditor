@@ -36,6 +36,11 @@ public class CodeEditor extends FrameLayout {
     boolean isShowExtendedKeyboard = false;
     int preHeight = 0;
     private Context context;
+
+    public TextProcessor getTextProcessor() {
+        return editor;
+    }
+
     private TextProcessor editor;
     private Language language;
     private LinesCollection lineNumbers;
@@ -414,20 +419,20 @@ public class CodeEditor extends FrameLayout {
         if (text != null) {
             setText(Editable.Factory.getInstance().newEditable(text), flag);
         } else {
-            setText("", flag);
+            setText(Editable.Factory.getInstance().newEditable(""), flag);
         }
     }
 
     public void setText(Editable text, int flag) {
         if (flag == 1) {
-            this.text = text;
+           // this.text = text;
             if (editor != null)
-                editor.setText(this.text);
+                editor.setText(text);
             return;
         }
         int length = 0;
-        if (this.text != null) {
-            length = this.text.length();
+        if (text != null) {
+            length = text.length();
         }
         replaceText(0, length, text);
         setDirty(false);

@@ -36,7 +36,7 @@ allprojects {
 ```groovy
 dependencies {
     ...
-    implementation 'com.github.ahmadaghazadeh:CodeEditor:1.0.15'
+    implementation 'com.github.ahmadaghazadeh:CodeEditor:1.0.16'
 }
 ```
 
