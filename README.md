@@ -12,6 +12,8 @@ Integration with existing project
 
 ### [Click For Play Video](https://youtu.be/lq-P1qwgU1Q)
 
+[Stackoverflow](https://stackoverflow.com/a/52641368/1770868)
+
 <div align="center">
   <a href="https://youtu.be/lq-P1qwgU1Q"><img src="media/screenshot.png" alt="Play Video"></a>
 </div>
