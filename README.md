@@ -1,4 +1,4 @@
-# CodeEditor [![](https://jitpack.io/v/ahmadaghazadeh/CodeEditor.svg)](https://jitpack.io/#ahmadaghazadeh/CodeEditor)
+# CodeEditor  [![](https://img.shields.io/badge/Ahmad%20Aghazadeh-Library-green.svg)](https://github.com/ahmadaghazadeh) [![](https://jitpack.io/v/ahmadaghazadeh/CodeEditor.svg)](https://jitpack.io/#ahmadaghazadeh/CodeEditor)
 
 This is a text/code(Base From [ModPE IDE] ) editor meant for integration as a modular component of the overall UI.
 The aim is to provide a powerful editor that can be used just like any other View.
