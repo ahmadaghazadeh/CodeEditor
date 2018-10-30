@@ -105,7 +105,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     int mIdealMargin;
     int mTopDirtyLine = 0;
     int mBottomDirtyLine = 0;
-    float textSize;
     int h;
     private ITextProcessorSetting defaultSetting;
     private CodeEditor codeEditor;
