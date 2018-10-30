@@ -22,23 +22,10 @@ package com.github.ahmadaghazadeh.editor.processor.utils;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.github.ahmadaghazadeh.editor.processor.utils.files.SortMode;
-
 
 public class Converter {
 
     public static int dpAsPixels(View view, int dp) {
         return (int) TypedValue.applyDimension(1, dp, view.getResources().getDisplayMetrics());
-    }
-
-    public static int toSortMode(String sortMode) {
-        switch (sortMode) {
-            case "SORT_BY_NAME":
-                return SortMode.SORT_BY_NAME;
-            case "SORT_BY_SIZE":
-                return SortMode.SORT_BY_SIZE;
-            default: //"SORT_BY_DATE"
-                return SortMode.SORT_BY_DATE;
-        }
     }
 }

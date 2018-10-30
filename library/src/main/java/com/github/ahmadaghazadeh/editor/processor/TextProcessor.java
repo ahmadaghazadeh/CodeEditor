@@ -19,9 +19,6 @@
 
 package com.github.ahmadaghazadeh.editor.processor;
 
-import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -40,7 +37,6 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.Selection;
-import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextWatcher;
@@ -74,13 +70,13 @@ import com.github.ahmadaghazadeh.editor.processor.utils.Logger;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.LineUtils;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.SymbolsTokenizer;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.TextChange;
-import com.github.ahmadaghazadeh.editor.processor.utils.text.UndoStack;
 import com.github.ahmadaghazadeh.editor.widget.CodeEditor;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import timber.log.Timber;
 
 public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements View.OnKeyListener {
 
@@ -92,7 +88,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     boolean mBracketMatching = true;
     boolean mHighlightCurrentLine = true;
     boolean mAutoComplete = true;
-    boolean mPinchZoom = true;
     boolean mIndentLine = true;
     boolean mInsertBracket = true;
     int mOnTextChangedChangeEnd;
@@ -110,24 +105,17 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     int mIdealMargin;
     int mTopDirtyLine = 0;
     int mBottomDirtyLine = 0;
-    boolean zoomPinch = false;
-    float zoomPinchFactor;
     float textSize;
     int h;
     private ITextProcessorSetting defaultSetting;
     private CodeEditor codeEditor;
-    private ClipboardManager mClipboardManager;
     private Context mContext;
     private Scroller mScroller;
     private OnScrollChangedListener[] mScrollChangedListeners;
     private VelocityTracker mVelocityTracker;
     private LineUtils mLineUtils;
-    private TypedValue mColorSearchSpan;
-    private TextChange mUpdateLastChange;
     private boolean isDoingUndoRedo = false;
     private boolean isAutoIndenting = false;
-    private UndoStack mRedoStack;
-    private UndoStack mUndoStack;
     private StylePaint mLineNumberPaint;
     private StylePaint mGutterBackgroundPaint;
     private StylePaint mLinePaint;
@@ -207,14 +195,9 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     protected void initParameters() {
         defaultSetting = new DefaultSetting(mContext);
-        mClipboardManager = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
         mScroller = new Scroller(mContext);
         mScrollChangedListeners = new OnScrollChangedListener[0];
         mLineUtils = new LineUtils();
-    }
-
-    public void SetTheme() {
-
     }
 
     /**
@@ -265,8 +248,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         mSelectedLinePaint.setColor(color);
 
         //endregion Paints
-
-        mColorSearchSpan = new TypedValue();
 
         if (!theme.resolveAttribute(R.attr.syntaxNumbers, colorAttr, true)) {
             theme.resolveAttribute(R.attr.syntaxNumbers, colorAttr, true);
@@ -435,41 +416,10 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     private void updateDocumentOnTextChanged(CharSequence s, int start, int count) {
+        Timber.d("updateDocumentOnTextChanged: " + s + ", start: " + start + ", count: " + count);
         mOnTextChangedNewText = s.subSequence(start, start + count).toString();
+        Timber.d("mOnTextChangedNewText: " + mOnTextChangedNewText);
         codeEditor.replaceText(mOnTextChangedChangeStart, mOnTextChangedChangeEnd, mOnTextChangedNewText);
-    }
-
-    private void updateUndoRedoOnTextChanged(CharSequence s, int start, int count) {
-        if (!isDoingUndoRedo && mUpdateLastChange != null) {
-            if (count < UndoStack.MAX_SIZE) {
-                mUpdateLastChange.newText = s.subSequence(start, start + count).toString();
-                if (start == mUpdateLastChange.start &&
-                        ((mUpdateLastChange.oldText.length() > 0
-                                || mUpdateLastChange.newText.length() > 0)
-                                && !mUpdateLastChange.oldText.equals(mUpdateLastChange.newText))) {
-                    mUndoStack.push(mUpdateLastChange);
-                    mRedoStack.removeAll();
-                }
-            } else {
-                mUndoStack.removeAll();
-                mRedoStack.removeAll();
-            }
-            mUpdateLastChange = null;
-        }
-    }
-
-    private void updateUndoRedoBeforeTextChanged(CharSequence s, int start, int count) {
-        if (!isDoingUndoRedo) {
-            if (count < UndoStack.MAX_SIZE) {
-                mUpdateLastChange = new TextChange();
-                mUpdateLastChange.oldText = s.subSequence(start, start + count).toString();
-                mUpdateLastChange.start = start;
-                return;
-            }
-            mUndoStack.removeAll();
-            mRedoStack.removeAll();
-            mUpdateLastChange = null;
-        }
     }
 
     @Override
@@ -479,48 +429,9 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         invalidate();
     }
 
-    protected Editable getSelectedText() {
-        if (getSelectionEnd() > getSelectionStart()) {
-            return (Editable) getText().subSequence(getSelectionStart(), getSelectionEnd());
-        }
-        return (Editable) getText().subSequence(getSelectionEnd(), getSelectionStart());
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (event.isCtrlPressed()) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_X: // CTRL+X - Cut
-                    cut();
-                    return true;
-                case KeyEvent.KEYCODE_C: // CTRL+C - Copy
-                    copy();
-                    return true;
-                case KeyEvent.KEYCODE_V: // CTRL+V - Paste
-                    paste();
-                    return true;
-                case KeyEvent.KEYCODE_Z: // CTRL+Z - Undo
-                    undo();
-                    return true;
-                case KeyEvent.KEYCODE_Y: // CTRL+Y - Redo
-                    redo();
-                    return true;
-                case KeyEvent.KEYCODE_A: // CTRL+A - Select All
-                    selectAll();
-                    return true;
-                case KeyEvent.KEYCODE_DEL: // CTRL+Delete - Delete Line
-                    deleteLine();
-                    return true;
-                case KeyEvent.KEYCODE_D: // CTRL+D - Duplicate Line
-                    duplicateLine();
-                    return true;
-//                case KeyEvent.KEYCODE_S: // CTRL+S - Save File
-//                    codeEditor.saveFile();
-//                    return true;
-                default:
-                    return super.onKeyDown(keyCode, event);
-            }
-        } else {
+        if (!event.isCtrlPressed()) {
             switch (keyCode) {
                 case KeyEvent.KEYCODE_TAB: // TAB
                     int start, end;
@@ -538,6 +449,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                     return false;
             }
         }
+        return false;
     }
 
     //endregion BASE_METHODS
@@ -577,12 +489,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
             post(() -> {
                 isAutoIndenting = true;
                 getText().replace(i, i + i2, replacementValue);
-                mUndoStack.pop();
-                TextChange change = mUndoStack.pop();
-                if (!replacementValue.equals("")) {
-                    change.newText = replacementValue;
-                    mUndoStack.push(change);
-                }
                 Selection.setSelection(getText(), newCursorPosition);
                 isAutoIndenting = false;
             });
@@ -697,13 +603,8 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         setAdapter(mAdapter);
     }
 
-    protected int getHeightVisible() {
-        Rect rect = new Rect();
-        getWindowVisibleDisplayFrame(rect);
-        return rect.bottom - rect.top;
-    }
-
     protected void onDropDownChangeSize(int w, int h) {
+        Timber.d("onPopupChangePosition");
         Rect rect = new Rect();
         getWindowVisibleDisplayFrame(rect);
 
@@ -720,6 +621,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     protected void onPopupChangePosition() {
+        Timber.d("onPopupChangePosition");
         try {
             Layout layout = getLayout();
             if (layout != null) {
@@ -733,8 +635,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 Paint textPaint = getPaint();
                 String sample="A";
                 textPaint.getTextBounds(sample, 0, sample.length(), bounds);
-                int width = bounds.width()/sample.length();
-
 
                 float x = layout.getPrimaryHorizontal(pos);
                 float y = baseline + ascent;
@@ -742,44 +642,10 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 int offsetHorizontal = (int) x + mGutterWidth;
                 setDropDownHorizontalOffset(offsetHorizontal);
 
-                int heightVisible = getHeightVisible();
                 int offsetVertical = (int) ((y + mCharHeight) - getScrollY());
 
-                int tmp = offsetVertical + getDropDownHeight() + mCharHeight;
-                //if (tmp < heightVisible) {
-                    tmp = -h + ((offsetVertical*2 / (mCharHeight)) * (mCharHeight / 2))+(mCharHeight/2);
-                    setDropDownVerticalOffset(tmp);
-                    //((Activity)(mContext)).setTitle("ov :"+offsetVertical +" ch "+mCharHeight+" tmp"+tmp +"h "+h+"p:"+pos);
-//                } else {
-//                    tmp = offsetVertical - getDropDownHeight() - mCharHeight;
-//                    setDropDownVerticalOffset(tmp);
-//                    ((Activity)(mContext)).setTitle(" 2 tmp :"+tmp);
-//                }
-
-
-//                int pos = getSelectionStart();
-//                int line = layout.getLineForOffset(pos);
-//                int baseline = layout.getLineBaseline(line);
-//                int ascent = layout.getLineAscent(line);
-//
-//                float x = layout.getPrimaryHorizontal(pos);
-//                float y = baseline + ascent;
-//
-//                int offsetHorizontal = (int) x + mGutterWidth;
-//                setDropDownHorizontalOffset(offsetHorizontal);
-//
-//                //    int heightVisible = getHeightVisible();
-//                int offsetVertical = (int) ((y + mCharHeight) - getScrollY());
-//
-//                int tmp = offsetVertical + getDropDownHeight() + mCharHeight;
-////                if (tmp < heightVisible) {
-//                tmp = -(offsetVertical + mCharHeight) + ((offsetVertical / mCharHeight) * (mCharHeight / 2));
-//                setDropDownVerticalOffset(tmp);
-////                } else {
-////                    tmp = offsetVertical - getDropDownHeight() - mCharHeight;
-////                    setDropDownVerticalOffset(tmp);
-////                }
-
+                int tmp = -h + ((offsetVertical*2 / (mCharHeight)) * (mCharHeight / 2))+(mCharHeight/2);
+                setDropDownVerticalOffset(tmp);
             }
         } catch (Exception e) {
             Logger.error(TAG, e);
@@ -792,6 +658,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     @Override
     public void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
+        Timber.d("onScrollChanged");
         super.onScrollChanged(horiz, vert, oldHoriz, oldVert);
         if (mScrollChangedListeners != null) {
             for (OnScrollChangedListener l : mScrollChangedListeners) {
@@ -1002,6 +869,12 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     @WorkerThread
     protected void syntaxHighlight(Layout layout, Editable editable,
                                    int lineHeight, int lineCount, int scrollY, int height) {
+        Timber.d("syntaxHighlight: " +
+                "editable: " + editable
+                + ", lineHeight: " + lineHeight
+                + ", lineCount: " + lineCount
+                + ", scrollY: " + scrollY
+                + ", height: " + height);
         if (mSyntaxHighlight && layout != null) {
             int topLine = (scrollY / lineHeight) - 10;
             int bottomLine = (((scrollY + height) / lineHeight) + 1) + 10;
@@ -1143,6 +1016,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     private void invalidateVisibleArea() {
+        Timber.d("invalidateVisibleArea");
         invalidate(getPaddingLeft(), getScrollY() + getPaddingTop(),
                 getWidth(), (getScrollY() + getPaddingTop()) + getHeight());
     }
@@ -1153,6 +1027,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
      * @param pos - позиция курсора.
      */
     protected void checkMatchingBracket(int pos) {
+        Timber.d("checkMatchingBracket: " + pos);
         getText().removeSpan(mOpenBracketSpan);
         getText().removeSpan(mClosedBracketSpan);
         if (mBracketMatching && codeEditor.getLanguage() != null) {
@@ -1212,45 +1087,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         getText().setSpan(mClosedBracketSpan, j, j + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
-    protected boolean pinchZoom(MotionEvent ev) {
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
-                zoomPinch = false;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (ev.getPointerCount() == 2) {
-                    float distance = getDistanceBetweenTouches(ev);
-                    if (!zoomPinch) {
-                        zoomPinchFactor = textSize / distance;
-                        zoomPinch = true;
-                        break;
-                    }
-                    textSize = zoomPinchFactor * distance;
-                    validateTextSize();
-                    setTextSize(textSize);
-                }
-                break;
-        }
-        return zoomPinch;
-    }
-
     //endregion SPAN_METHODS
-
-    //region PINCH_ZOOM
-
-    protected float getDistanceBetweenTouches(MotionEvent ev) {
-        float xx = ev.getX(1) - ev.getX(0);
-        float yy = ev.getY(1) - ev.getY(0);
-        return (float) Math.sqrt(xx * xx + yy * yy);
-    }
-
-    protected void validateTextSize() {
-        if (textSize < 10) //minimum
-            textSize = 10; //minimum
-        else if (textSize > 20) //maximum
-            textSize = 20; //maximum
-    }
 
     /**
      * Отключаем фокусировку на редакторе, нажатия не будут засчитываться,
@@ -1348,20 +1185,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     public void enableUndoRedoStack() { //включаем заполнение стака
         mAddedTextCount = 0;
-        mUndoStack = new UndoStack();
-        mRedoStack = new UndoStack();
         addTextChangedListener(new TextChangeWatcher());
-    }
-
-    public void setPinchZoom(boolean enabled) {
-        mPinchZoom = enabled;
-        if (mPinchZoom) {
-            float scaledDensity = getResources().getDisplayMetrics().scaledDensity;
-            textSize = getTextSize() / scaledDensity;
-            setOnTouchListener((v, ev) -> pinchZoom(ev));
-        } else {
-            setOnTouchListener((v, ev) -> false);
-        }
     }
 
     public void setIndentLine(boolean indentLine) {
@@ -1405,218 +1229,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         }
     }
 
-    public void insert(CharSequence delta) {
-        int selectionStart = getSelectionStart();
-        int selectionEnd = getSelectionEnd();
-        selectionStart = Math.max(0, selectionStart);
-        selectionEnd = Math.max(0, selectionEnd);
-        selectionStart = Math.min(selectionStart, selectionEnd);
-        selectionEnd = Math.max(selectionStart, selectionEnd);
-        try {
-            getText().delete(selectionStart, selectionEnd);
-            getText().insert(selectionStart, delta);
-        } catch (Exception e) {
-            Logger.error(TAG, e);
-        }
-    }
-
     //endregion DOC_METHODS
-
-    //region METHODS
-
-    public void cut() {
-        Editable selectedText = getSelectedText();
-        if (selectedText == null || selectedText.toString().equals("")) {
-            codeEditor.showToast(mContext.getString(R.string.nothing_to_cut), true);
-            Logger.debug(TAG, mContext.getString(R.string.nothing_to_cut));
-        } else {
-            mClipboardManager.setPrimaryClip(ClipData.newPlainText("CuttedText", selectedText));
-            if (getSelectionEnd() > getSelectionStart()) {
-                getText().replace(getSelectionStart(), getSelectionEnd(), "");
-            } else {
-                getText().replace(getSelectionEnd(), getSelectionStart(), "");
-            }
-        }
-    }
-
-    public void copy() {
-        Editable selectedText = getSelectedText();
-        if (selectedText == null || selectedText.toString().equals("")) {
-            codeEditor.showToast(mContext.getString(R.string.nothing_to_copy), true);
-            Logger.debug(TAG, mContext.getString(R.string.nothing_to_copy));
-        } else {
-            mClipboardManager.setPrimaryClip(ClipData.newPlainText("CopiedText", selectedText));
-        }
-    }
-
-    public void paste() {
-        if (mClipboardManager.getPrimaryClip() == null ||
-                mClipboardManager.getPrimaryClip().toString().equals("")) {
-            codeEditor.showToast(getContext().getString(R.string.nothing_to_paste), true);
-            Logger.debug(TAG, getContext().getString(R.string.nothing_to_paste));
-        }
-        if (!mClipboardManager.hasPrimaryClip()) {
-            return;
-        }
-        if (getSelectionEnd() > getSelectionStart()) {
-            getText().replace(getSelectionStart(), getSelectionEnd(),
-                    mClipboardManager.getPrimaryClip()
-                            .getItemAt(0).coerceToText(mContext));
-        } else {
-            getText().replace(getSelectionEnd(), getSelectionStart(),
-                    mClipboardManager.getPrimaryClip()
-                            .getItemAt(0).coerceToText(mContext));
-        }
-    }
-
-    public void selectLine() {
-        int start = Math.min(getSelectionStart(), getSelectionEnd());
-        int end = Math.max(getSelectionStart(), getSelectionEnd());
-        if (end > start) {
-            end--;
-        }
-        while (end < getText().length() && getText().charAt(end) != '\n') {
-            end++;
-        }
-        while (start > 0 && getText().charAt(start - 1) != '\n') {
-            start--;
-        }
-        setSelection(start, end);
-    }
-
-    public void deleteLine() {
-        int start = Math.min(getSelectionStart(), getSelectionEnd());
-        int end = Math.max(getSelectionStart(), getSelectionEnd());
-        if (end > start) {
-            end--;
-        }
-        while (end < getText().length() && getText().charAt(end) != '\n') {
-            end++;
-        }
-        while (start > 0 && getText().charAt(start - 1) != '\n') {
-            start--;
-        }
-        getEditableText().delete(start, end);
-    }
-
-    public void duplicateLine() {
-        int start = Math.min(getSelectionStart(), getSelectionEnd());
-        int end = Math.max(getSelectionStart(), getSelectionEnd());
-        if (end > start) {
-            end--;
-        }
-        while (end < getText().length() && getText().charAt(end) != '\n') {
-            end++;
-        }
-        while (start > 0 && getText().charAt(start - 1) != '\n') {
-            start--;
-        }
-        getEditableText().insert(end, "\n" +
-                getText().subSequence(start, end).toString());
-    }
-
-    public void undo() {
-        TextChange textChange = mUndoStack.pop();
-        if (textChange == null) {
-            Logger.debug(TAG, mContext.getString(R.string.nothing_to_undo));
-            codeEditor.showToast(mContext.getString(R.string.nothing_to_undo), true);
-        } else if (textChange.start >= 0) {
-            isDoingUndoRedo = true;
-            if (textChange.start < 0) {
-                textChange.start = 0;
-            }
-            if (textChange.start > getText().length()) {
-                textChange.start = getText().length();
-            }
-            int end = textChange.start + textChange.newText.length();
-            if (end < 0) {
-                end = 0;
-            }
-            if (end > getText().length()) {
-                end = getText().length();
-            }
-            getText().replace(textChange.start, end, textChange.oldText);
-            Selection.setSelection(getText(), textChange.start + textChange.oldText.length());
-            mRedoStack.push(textChange);
-            isDoingUndoRedo = false;
-        } else {
-            Logger.error(TAG, "undo(): unknown error", null);
-            mUndoStack.clear();
-        }
-    }
-
-    public void redo() {
-        TextChange textChange = mRedoStack.pop();
-        if (textChange == null) {
-            Logger.debug(TAG, mContext.getString(R.string.nothing_to_redo));
-            codeEditor.showToast(mContext.getString(R.string.nothing_to_redo), true);
-        } else if (textChange.start >= 0) {
-            isDoingUndoRedo = true;
-            getText().replace(textChange.start,
-                    textChange.start + textChange.oldText.length(), textChange.newText);
-            Selection.setSelection(getText(), textChange.start + textChange.newText.length());
-            mUndoStack.push(textChange);
-            isDoingUndoRedo = false;
-        } else {
-            Logger.error(TAG, "redo(): unknown error", null);
-            mUndoStack.clear();
-        }
-    }
-
-    public void gotoLine(int toLine) {
-        int realLine = toLine - 1;
-        if (realLine == -1) {
-            codeEditor.showToast(mContext.getString(R.string.gotoLine_above_than_0), true);
-        } else if (realLine < codeEditor.getLineCount()) {
-            setSelection(codeEditor.getIndexForStartOfLine(realLine));
-        } else {
-            codeEditor.showToast(mContext.getString(R.string.gotoLine_not_exists), true);
-        }
-    }
-
-    @WorkerThread
-    public void find(String what, boolean matchCase, boolean regex, boolean wordOnly, Editable e) {
-        Pattern pattern;
-        if (regex) {
-            if (matchCase) {
-                pattern = Pattern.compile(what);
-            } else {
-                pattern = Pattern.compile(what,
-                        Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-            }
-        } else {
-            if (wordOnly) {
-                if (matchCase) {
-                    pattern = Pattern.compile("\\s" + what + "\\s");
-                } else {
-                    pattern = Pattern.compile("\\s" + Pattern.quote(what) + "\\s",
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-                }
-            } else {
-                if (matchCase) {
-                    pattern = Pattern.compile(Pattern.quote(what));
-                } else {
-                    pattern = Pattern.compile(Pattern.quote(what),
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-                }
-            }
-        }
-        //Очищаем background-спаны, потому что будем накладывать новые
-        clearSpans(e, false, true, false);
-        for (Matcher m = pattern.matcher(e); m.find(); ) {
-            e.setSpan(new BackgroundColorSpan(mColorSearchSpan.data),
-                    m.start(),
-                    m.end(),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-    }
-
-    public void replaceAll(String what, String with) {
-        //Очищаем спаны из-за смены текста
-        clearSpans(getEditableText(), false, true, true);
-        setText(getText().toString().replaceAll(what, with));
-    }
-
     protected final class TextChangeWatcher implements TextWatcher {
 
         @Override
@@ -1624,7 +1237,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
             mAddedTextCount -= count;
             mOldText = s.subSequence(start, start + count).toString();
             updateDocumentBeforeTextChanged(start, count);
-            updateUndoRedoBeforeTextChanged(s, start, count);
             abortFling();
         }
 
@@ -1634,7 +1246,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
             mNewText = s.subSequence(start, start + count).toString();
             generalOnTextChanged(start, count);
             updateDocumentOnTextChanged(s, start, count);
-            updateUndoRedoOnTextChanged(s, start, count);
             mOldText = "";
             mNewText = "";
             if (mAutoComplete)

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.WorkerThread;
@@ -13,7 +12,6 @@ import android.text.Editable;
 import android.text.TextPaint;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -23,7 +21,6 @@ import android.widget.RelativeLayout;
 import com.github.ahmadaghazadeh.editor.R;
 import com.github.ahmadaghazadeh.editor.document.commons.LinesCollection;
 import com.github.ahmadaghazadeh.editor.keyboard.ExtendedKeyboard;
-import com.github.ahmadaghazadeh.editor.processor.TextNotFoundException;
 import com.github.ahmadaghazadeh.editor.processor.TextProcessor;
 import com.github.ahmadaghazadeh.editor.processor.language.Language;
 import com.github.ahmadaghazadeh.editor.processor.language.LanguageProvider;
@@ -37,10 +34,6 @@ public class CodeEditor extends FrameLayout {
     int preHeight = 0;
     private Context context;
 
-    public TextProcessor getTextProcessor() {
-        return editor;
-    }
-
     private TextProcessor editor;
     private Language language;
     private LinesCollection lineNumbers;
@@ -48,7 +41,6 @@ public class CodeEditor extends FrameLayout {
     private ITextProcessorSetting setting;
     private ExtendedKeyboard recyclerView;
     private ICodeEditorTextChange codeEditorTextChange;
-    private boolean isDirty; //На данный момент не используется
 
     public CodeEditor(Context context) {
         super(context);
@@ -113,7 +105,6 @@ public class CodeEditor extends FrameLayout {
 
     private void init(Context context, AttributeSet attrs) {
         try {
-            // removeAllViews();
             this.context = context;
             initEditor();
             String code = "";
@@ -237,40 +228,10 @@ public class CodeEditor extends FrameLayout {
         }
     }
 
-
-//    public   int getScreenHeight() {
-//        int mRealSizeHeight=0;
-//        WindowManager windowManager =
-//                (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-//        final Display display = windowManager.getDefaultDisplay();
-//        Point outPoint = new Point();
-//        if (Build.VERSION.SDK_INT >= 19) {
-//            // include navigation bar
-//            display.getRealSize(outPoint);
-//        } else {
-//            // exclude navigation bar
-//            display.getSize(outPoint);
-//        }
-//        if (outPoint.y > outPoint.x) {
-//            mRealSizeHeight = outPoint.y;
-//            //mRealSizeWidth = outPoint.x;
-//        } else {
-//            mRealSizeHeight = outPoint.x;
-//            //mRealSizeWidth = outPoint.y;
-//        }
-//        return mRealSizeHeight;
-//    }
-
-
     public void setShowExtendedKeyboard(Boolean showExtendedKeyboard) {
         if (recyclerView != null) {
             recyclerView.setVisibility(showExtendedKeyboard ? VISIBLE : GONE);
         }
-    }
-
-    public void initEditor(String code, String lang) {
-        setText(code, 1);
-        setLanguage(LanguageProvider.getLanguage(lang));
     }
 
     public void refreshEditor() {
@@ -281,7 +242,6 @@ public class CodeEditor extends FrameLayout {
             editor.setBracketMatching(setting.getBracketMatching());
             editor.setHighlightCurrentLine(setting.getHighlightCurrentLine());
             editor.setCodeCompletion(setting.getCodeCompletion());
-            editor.setPinchZoom(setting.getPinchZoom());
             editor.setInsertBrackets(setting.getInsertBracket());
             editor.setIndentLine(setting.getIndentLine());
             editor.refreshTypeface();
@@ -300,11 +260,6 @@ public class CodeEditor extends FrameLayout {
 
     public void setSetting(ITextProcessorSetting setting) {
         this.setting = setting;
-    }
-
-    private void setDirty(boolean dirty) {
-        isDirty = dirty;
-        //тут будет добавление "*" после названия файла если документ был изменен
     }
 
     public String getText() {
@@ -335,12 +290,7 @@ public class CodeEditor extends FrameLayout {
             editor.setReadOnly(readOnly);
     }
 
-    public void setSyntaxHighlight(boolean syntaxHighlight) {
-        if (editor != null)
-            editor.setSyntaxHighlight(syntaxHighlight);
-    }
-
-    //endregion METHODS_DOC
+    // endregion METHODS_DOC
 
     //region LINES
 
@@ -412,7 +362,6 @@ public class CodeEditor extends FrameLayout {
             end = 0;
         }
         this.text.replace(start, end, text);
-        setDirty(true);
     }
 
     public void setText(String text, int flag) {
@@ -435,113 +384,12 @@ public class CodeEditor extends FrameLayout {
             length = text.length();
         }
         replaceText(0, length, text);
-        setDirty(false);
     }
 
     //endregion LINES
 
-    //region METHODS
-
-    public void insert(@NonNull CharSequence text) {
-        if (editor != null)
-            editor.insert(text);
-    }
-
-    public void cut() throws TextNotFoundException {
-        if (editor != null)
-            editor.cut();
-        else
-            throw new TextNotFoundException();
-    }
-
-    public void copy() throws TextNotFoundException {
-        if (editor != null)
-            editor.copy();
-        else
-            throw new TextNotFoundException();
-    }
-
-    public void paste() throws TextNotFoundException {
-        if (editor != null)
-            editor.paste();
-        else
-            throw new TextNotFoundException();
-    }
-
-    public void undo() throws TextNotFoundException {
-        if (editor != null)
-            editor.undo();
-        else
-            throw new TextNotFoundException();
-    }
-
-    public void redo() throws TextNotFoundException {
-        if (editor != null)
-            editor.redo();
-        else
-            throw new TextNotFoundException();
-    }
-
-    public void selectAll() throws TextNotFoundException {
-        if (editor != null)
-            editor.selectAll();
-        else
-            throw new TextNotFoundException();
-    }
-
-    public void selectLine() throws TextNotFoundException {
-        if (editor != null)
-            editor.selectLine();
-        else
-            throw new TextNotFoundException();
-    }
-
-    public void deleteLine() throws TextNotFoundException {
-        if (editor != null)
-            editor.deleteLine();
-        else
-            throw new TextNotFoundException();
-    }
-
-    public void duplicateLine() throws TextNotFoundException {
-        if (editor != null)
-            editor.duplicateLine();
-        else
-            throw new TextNotFoundException();
-    }
-
-    public void find(String what, boolean matchCase, boolean regex, boolean wordOnly, Runnable onComplete) throws TextNotFoundException {
-        if (editor != null && !what.equals("")) {
-            editor.find(what, matchCase, regex, wordOnly, editor.getEditableText());
-            onComplete.run();
-        } else {
-            throw new TextNotFoundException();
-        }
-    }
-
-    public void replaceAll(String what, String with, Runnable onComplete) throws TextNotFoundException {
-        if (editor != null && !what.equals("") && !with.equals("")) {
-            editor.replaceAll(what, with);
-            onComplete.run();
-        } else {
-            throw new TextNotFoundException();
-        }
-    }
-
-    public void gotoLine(int line) throws TextNotFoundException {
-        if (editor != null)
-            editor.gotoLine(line);
-        else
-            throw new TextNotFoundException();
-    }
-
-    public void showToast(String string, boolean b) {
-
-    }
 
     public interface ICodeEditorTextChange {
         void onTextChange(String str);
     }
-
-
 }
