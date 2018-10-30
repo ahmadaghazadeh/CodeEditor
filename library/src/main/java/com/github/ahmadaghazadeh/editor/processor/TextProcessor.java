@@ -66,10 +66,8 @@ import com.github.ahmadaghazadeh.editor.processor.style.SyntaxHighlightSpan;
 import com.github.ahmadaghazadeh.editor.processor.utils.Converter;
 import com.github.ahmadaghazadeh.editor.processor.utils.DefaultSetting;
 import com.github.ahmadaghazadeh.editor.processor.utils.ITextProcessorSetting;
-import com.github.ahmadaghazadeh.editor.processor.utils.Logger;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.LineUtils;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.SymbolsTokenizer;
-import com.github.ahmadaghazadeh.editor.processor.utils.text.TextChange;
 import com.github.ahmadaghazadeh.editor.widget.CodeEditor;
 
 import java.lang.reflect.Field;
@@ -79,8 +77,6 @@ import java.util.regex.Matcher;
 import timber.log.Timber;
 
 public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements View.OnKeyListener {
-
-    private static final String TAG = TextProcessor.class.getSimpleName();
 
     private static final String TAB_STR = "    "; //4 spaces
     boolean mShowLineNumbers = true;
@@ -108,7 +104,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     int h;
     private ITextProcessorSetting defaultSetting;
     private CodeEditor codeEditor;
-    private Context mContext;
     private Scroller mScroller;
     private OnScrollChangedListener[] mScrollChangedListeners;
     private VelocityTracker mVelocityTracker;
@@ -133,12 +128,10 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     public TextProcessor(Context context) {
         super(context);
-        mContext = context;
     }
 
     public TextProcessor(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
     }
 
     //endregion CONSTRUCTOR
@@ -147,7 +140,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     public TextProcessor(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext = context;
     }
 
     /**
@@ -193,8 +185,8 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     protected void initParameters() {
-        defaultSetting = new DefaultSetting(mContext);
-        mScroller = new Scroller(mContext);
+        defaultSetting = new DefaultSetting(getContext());
+        mScroller = new Scroller(getContext());
         mScrollChangedListeners = new OnScrollChangedListener[0];
         mLineUtils = new LineUtils();
     }
@@ -205,7 +197,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     protected void initTheme() {
         TypedValue colorAttr;
 
-        Resources.Theme theme = mContext.getTheme();
+        Resources.Theme theme = getContext().getTheme();
 
         mLineNumberPaint = new StylePaint(true, false);
         colorAttr = new TypedValue();
@@ -355,7 +347,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
     }
 
     protected void initMethods() {
-        ViewConfiguration configuration = ViewConfiguration.get(mContext);
+        ViewConfiguration configuration = ViewConfiguration.get(getContext());
         mMaximumVelocity = configuration.getScaledMaximumFlingVelocity() * 100;
         mIdealMargin = Converter.dpAsPixels(this, 4);
         setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -390,7 +382,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         try {
             return super.onSaveInstanceState();
         } catch (Exception e) {
-            Logger.error(TAG, e);
+            Timber.d(e);
             return BaseSavedState.EMPTY_STATE;
         }
     }
@@ -443,7 +435,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                     try {
                         return super.onKeyDown(keyCode, event);
                     } catch (Exception e) {
-                        Logger.error(TAG, e);
+                        Timber.d(e);
                     }
                     return false;
             }
@@ -598,7 +590,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
 
     protected void setSuggestData(ArrayList<SuggestionItem> data) {
         SuggestionAdapter mAdapter =
-                new SuggestionAdapter(mContext, R.layout.item_list_suggest, data);
+                new SuggestionAdapter(getContext(), R.layout.item_list_suggest, data);
         setAdapter(mAdapter);
     }
 
@@ -607,7 +599,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         Rect rect = new Rect();
         getWindowVisibleDisplayFrame(rect);
 
-        Logger.debug(TAG, "onDropdownChangeSize: " + rect);
+        Timber.d("onDropdownChangeSize: " + rect);
 
         // 1/2 width of screen
         setDropDownWidth((int) (w * 0.5f));
@@ -647,7 +639,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
                 setDropDownVerticalOffset(tmp);
             }
         } catch (Exception e) {
-            Logger.error(TAG, e);
+            Timber.d(e);
         }
     }
 
@@ -1147,13 +1139,13 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
      */
     public void refreshTypeface() {
         if (defaultSetting.getCurrentTypeface().equals("droid_sans_mono")) {
-            setTypeface(TypefaceManager.get(mContext, TypefaceManager.DROID_SANS_MONO));
+            setTypeface(TypefaceManager.get(getContext(), TypefaceManager.DROID_SANS_MONO));
         } else if (defaultSetting.getCurrentTypeface().equals("source_code_pro")) {
-            setTypeface(TypefaceManager.get(mContext, TypefaceManager.SOURCE_CODE_PRO));
+            setTypeface(TypefaceManager.get(getContext(), TypefaceManager.SOURCE_CODE_PRO));
         } else if (defaultSetting.getCurrentTypeface().equals("roboto")) {
-            setTypeface(TypefaceManager.get(mContext, TypefaceManager.ROBOTO));
+            setTypeface(TypefaceManager.get(getContext(), TypefaceManager.ROBOTO));
         } else { //if(defaultSetting.getCurrentTypeface().equals("roboto_light"))
-            setTypeface(TypefaceManager.get(mContext, TypefaceManager.ROBOTO_LIGHT));
+            setTypeface(TypefaceManager.get(getContext(), TypefaceManager.ROBOTO_LIGHT));
         }
         mLineNumberPaint.setTypeface(getTypeface());
         setPaintFlags(getPaintFlags() | StylePaint.SUBPIXEL_TEXT_FLAG);
@@ -1213,7 +1205,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
             Object editor = field.get(this);
 
             // Get the drawable and set a color filter
-            Drawable drawable = ContextCompat.getDrawable(mContext, drawableResId);
+            Drawable drawable = ContextCompat.getDrawable(getContext(), drawableResId);
             if (drawable != null) {
                 drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
             }
@@ -1224,7 +1216,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
             field.setAccessible(true);
             field.set(editor, drawables);
         } catch (Exception e) {
-            Logger.error(TAG, e);
+            Timber.d(e);
         }
     }
 

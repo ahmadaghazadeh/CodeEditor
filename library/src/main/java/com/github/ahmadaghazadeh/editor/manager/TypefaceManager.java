@@ -22,14 +22,11 @@ package com.github.ahmadaghazadeh.editor.manager;
 import android.content.Context;
 import android.graphics.Typeface;
 
-
-import com.github.ahmadaghazadeh.editor.processor.utils.Logger;
+import timber.log.Timber;
 
 import java.util.HashMap;
 
 public class TypefaceManager {
-
-    private static final String TAG = TypefaceManager.class.getSimpleName();
 
     /**
      * Основная работа со шрифтами.
@@ -65,7 +62,7 @@ public class TypefaceManager {
         }
         Typeface typeface = Typeface.createFromAsset(context.getAssets(), file);
         if (typeface == null) {
-            Logger.debug(TAG, "typeface is null, use monospace");
+            Timber.d("typeface is null, use monospace");
             return Typeface.MONOSPACE;
         }
         return typeface;
