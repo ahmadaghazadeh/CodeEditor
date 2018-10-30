@@ -22,7 +22,6 @@ package com.github.ahmadaghazadeh.editor.processor.utils;
 import android.util.TypedValue;
 import android.view.View;
 
-
 public class Converter {
 
     public static int dpAsPixels(View view, int dp) {
