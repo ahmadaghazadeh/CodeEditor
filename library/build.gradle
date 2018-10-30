@@ -4,8 +4,6 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion 28
 
-
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
@@ -13,8 +11,8 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
+
     dataBinding {
         enabled = true
     }
@@ -25,11 +23,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-//    javaCompileOptions {
-//        annotationProcessorOptions {
-//            includeCompileClasspath = true
-//        }
-//    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
