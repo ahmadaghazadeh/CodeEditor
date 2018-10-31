@@ -25,20 +25,17 @@ import com.github.ahmadaghazadeh.editor.processor.TextProcessor;
 import com.github.ahmadaghazadeh.editor.processor.language.Language;
 import com.github.ahmadaghazadeh.editor.processor.language.LanguageProvider;
 import com.github.ahmadaghazadeh.editor.processor.utils.DefaultSetting;
-import com.github.ahmadaghazadeh.editor.processor.utils.ITextProcessorSetting;
 
 public class CodeEditor extends FrameLayout {
     FrameLayout rootView;
     boolean isReadOnly = false;
     boolean isShowExtendedKeyboard = false;
     int preHeight = 0;
-    private Context context;
 
     private TextProcessor editor;
     private Language language;
     private LinesCollection lineNumbers;
     private Editable text;
-    private ITextProcessorSetting setting;
     private ExtendedKeyboard recyclerView;
     private ICodeEditorTextChange codeEditorTextChange;
 
@@ -105,7 +102,6 @@ public class CodeEditor extends FrameLayout {
 
     private void init(Context context, AttributeSet attrs) {
         try {
-            this.context = context;
             initEditor();
             String code = "";
             String lang = "html";
@@ -236,30 +232,21 @@ public class CodeEditor extends FrameLayout {
 
     public void refreshEditor() {
         if (editor != null) {
-            editor.setTextSize(setting.getFontSize());
-            editor.setHorizontallyScrolling(!setting.getWrapContent());
-            editor.setShowLineNumbers(setting.getShowLineNumbers());
-            editor.setBracketMatching(setting.getBracketMatching());
-            editor.setHighlightCurrentLine(setting.getHighlightCurrentLine());
-            editor.setCodeCompletion(setting.getCodeCompletion());
-            editor.setInsertBrackets(setting.getInsertBracket());
-            editor.setIndentLine(setting.getIndentLine());
+            editor.setTextSize(DefaultSetting.INSTANCE.getFontSize());
+            editor.setHorizontallyScrolling(!DefaultSetting.INSTANCE.getWrapContent());
+            editor.setShowLineNumbers(DefaultSetting.INSTANCE.getShowLineNumbers());
+            editor.setBracketMatching(DefaultSetting.INSTANCE.getBracketMatching());
+            editor.setHighlightCurrentLine(DefaultSetting.INSTANCE.getHighlightCurrentLine());
+            editor.setCodeCompletion(DefaultSetting.INSTANCE.getCodeCompletion());
+            editor.setInsertBrackets(DefaultSetting.INSTANCE.getInsertBracket());
+            editor.setIndentLine(DefaultSetting.INSTANCE.getIndentLine());
             editor.refreshTypeface();
             editor.refreshInputType();
         }
     }
 
     private void initEditor() {
-        setting = new DefaultSetting(context);
         lineNumbers = new LinesCollection();
-    }
-
-    public ITextProcessorSetting getSetting() {
-        return setting;
-    }
-
-    public void setSetting(ITextProcessorSetting setting) {
-        this.setting = setting;
     }
 
     public String getText() {

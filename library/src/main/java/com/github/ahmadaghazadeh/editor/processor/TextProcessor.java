@@ -63,7 +63,6 @@ import com.github.ahmadaghazadeh.editor.processor.style.StyleSpan;
 import com.github.ahmadaghazadeh.editor.processor.style.SyntaxHighlightSpan;
 import com.github.ahmadaghazadeh.editor.processor.utils.Converter;
 import com.github.ahmadaghazadeh.editor.processor.utils.DefaultSetting;
-import com.github.ahmadaghazadeh.editor.processor.utils.ITextProcessorSetting;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.LineUtils;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.SymbolsTokenizer;
 import com.github.ahmadaghazadeh.editor.widget.CodeEditor;
@@ -100,7 +99,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
     int mTopDirtyLine = 0;
     int mBottomDirtyLine = 0;
     int h;
-    private ITextProcessorSetting defaultSetting;
     private CodeEditor codeEditor;
     private Scroller mScroller;
     private OnScrollChangedListener[] mScrollChangedListeners;
@@ -183,7 +181,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
     }
 
     protected void initParameters() {
-        defaultSetting = new DefaultSetting(getContext());
         mScroller = new Scroller(getContext());
         mScrollChangedListeners = new OnScrollChangedListener[0];
         mLineUtils = new LineUtils();
@@ -662,7 +659,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
                 int velocityX;
                 mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
                 int velocityY = (int) mVelocityTracker.getYVelocity();
-                if (defaultSetting.getWrapContent()) {
+                if (DefaultSetting.INSTANCE.getWrapContent()) {
                     velocityX = 0;
                 } else {
                     velocityX = (int) mVelocityTracker.getXVelocity();
@@ -1091,7 +1088,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
      * то они не будут отображаться.
      */
     public void refreshInputType() {
-        if (defaultSetting.getImeKeyboard())
+        if (DefaultSetting.INSTANCE.getImeKeyboard())
             setInputType(InputType.TYPE_CLASS_TEXT
                     | InputType.TYPE_TEXT_FLAG_MULTI_LINE
                     | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE);
@@ -1106,11 +1103,11 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
      * Отображение шрифта в редакторе. Применяется также и к нумерации строк.
      */
     public void refreshTypeface() {
-        if (defaultSetting.getCurrentTypeface().equals("droid_sans_mono")) {
+        if (DefaultSetting.INSTANCE.getCurrentTypeface().equals("droid_sans_mono")) {
             setTypeface(TypefaceManager.get(getContext(), TypefaceManager.DROID_SANS_MONO));
-        } else if (defaultSetting.getCurrentTypeface().equals("source_code_pro")) {
+        } else if (DefaultSetting.INSTANCE.getCurrentTypeface().equals("source_code_pro")) {
             setTypeface(TypefaceManager.get(getContext(), TypefaceManager.SOURCE_CODE_PRO));
-        } else if (defaultSetting.getCurrentTypeface().equals("roboto")) {
+        } else if (DefaultSetting.INSTANCE.getCurrentTypeface().equals("roboto")) {
             setTypeface(TypefaceManager.get(getContext(), TypefaceManager.ROBOTO));
         } else { //if(defaultSetting.getCurrentTypeface().equals("roboto_light"))
             setTypeface(TypefaceManager.get(getContext(), TypefaceManager.ROBOTO_LIGHT));
