@@ -44,10 +44,8 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Scroller;
@@ -76,7 +74,7 @@ import java.util.regex.Matcher;
 
 import timber.log.Timber;
 
-public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements View.OnKeyListener {
+public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
 
     private static final String TAB_STR = "    "; //4 spaces
     boolean mShowLineNumbers = true;
@@ -351,7 +349,6 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
         mMaximumVelocity = configuration.getScaledMaximumFlingVelocity() * 100;
         mIdealMargin = Converter.dpAsPixels(this, 4);
         setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-        setOnKeyListener(this);
     }
 
     //endregion INIT
@@ -419,38 +416,9 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView implements
             checkMatchingBracket(selStart);
         invalidate();
     }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (!event.isCtrlPressed()) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_TAB: // TAB
-                    int start, end;
-                    start = Math.max(getSelectionStart(), 0);
-                    end = Math.max(getSelectionEnd(), 0);
-                    getText().replace(Math.min(start, end),
-                            Math.max(start, end), TAB_STR, 0, TAB_STR.length());
-                    return true;
-                default:
-                    try {
-                        return super.onKeyDown(keyCode, event);
-                    } catch (Exception e) {
-                        Timber.d(e);
-                    }
-                    return false;
-            }
-        }
-        return false;
-    }
-
     //endregion BASE_METHODS
 
     //region INDENTATION
-
-    @Override
-    public boolean onKey(View view, int keyCode, KeyEvent event) {
-        return false;
-    }
 
     private void generalOnTextChanged(int start, int count) {
         if (!isDoingUndoRedo && !isAutoIndenting) {
