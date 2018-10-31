@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.WorkerThread;
@@ -33,7 +34,6 @@ public class CodeEditor extends FrameLayout {
     int preHeight = 0;
 
     private TextProcessor editor;
-    private Language language;
     private LinesCollection lineNumbers;
     private Editable text;
     private ExtendedKeyboard recyclerView;
@@ -259,11 +259,11 @@ public class CodeEditor extends FrameLayout {
     @WorkerThread
     @Nullable
     public Language getLanguage() {
-        return language;
+        return this.editor.getLanguage();
     }
 
-    public void setLanguage(@Nullable Language language) {
-        this.language = language;
+    public void setLanguage(@NonNull Language language) {
+        this.editor.setLanguage(language);
     }
 
     //region METHODS_DOC

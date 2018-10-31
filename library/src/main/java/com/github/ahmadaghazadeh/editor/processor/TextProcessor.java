@@ -58,6 +58,7 @@ import com.github.ahmadaghazadeh.editor.document.suggestions.SuggestionItem;
 import com.github.ahmadaghazadeh.editor.document.suggestions.SuggestionType;
 import com.github.ahmadaghazadeh.editor.interfaces.OnScrollChangedListener;
 import com.github.ahmadaghazadeh.editor.manager.TypefaceManager;
+import com.github.ahmadaghazadeh.editor.processor.language.Language;
 import com.github.ahmadaghazadeh.editor.processor.style.StylePaint;
 import com.github.ahmadaghazadeh.editor.processor.style.StyleSpan;
 import com.github.ahmadaghazadeh.editor.processor.style.SyntaxHighlightSpan;
@@ -118,6 +119,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
     private StyleSpan mSyntaxStrings;
     private StyleSpan mSyntaxComments;
     private BackgroundColorSpan mOpenBracketSpan;
+    private Language language;
 
     //region CONSTRUCTOR
     private BackgroundColorSpan mClosedBracketSpan;
@@ -544,9 +546,9 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
     }
 
     protected void loadSuggestions() {
-        if (codeEditor.getLanguage() != null) {
+        if (language != null) {
             ArrayList<SuggestionItem> data = new ArrayList<>();
-            for (String name : codeEditor.getLanguage().getAllCompletions()) {
+            for (String name : language.getAllCompletions()) {
                 data.add(new SuggestionItem(SuggestionType.TYPE_KEYWORD, name)); //Keyword
             }
             setSuggestData(data);
@@ -857,8 +859,8 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
 
                 //region PROCESS_HIGHLIGHT
 
-                if (codeEditor.getLanguage() != null) {
-                    Matcher m = codeEditor.getLanguage().getSyntaxNumbers().matcher( //Numbers
+                if (language != null) {
+                    Matcher m = language.getSyntaxNumbers().matcher( //Numbers
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         editable.setSpan(
@@ -869,7 +871,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = codeEditor.getLanguage().getSyntaxSymbols().matcher( //Symbols
+                    m = language.getSyntaxSymbols().matcher( //Symbols
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         editable.setSpan(
@@ -880,7 +882,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = codeEditor.getLanguage().getSyntaxBrackets().matcher( //Brackets
+                    m = language.getSyntaxBrackets().matcher( //Brackets
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         editable.setSpan(
@@ -891,7 +893,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = codeEditor.getLanguage().getSyntaxKeywords().matcher( //Keywords
+                    m = language.getSyntaxKeywords().matcher( //Keywords
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         editable.setSpan(
@@ -902,7 +904,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = codeEditor.getLanguage().getSyntaxMethods().matcher( //Methods
+                    m = language.getSyntaxMethods().matcher( //Methods
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         editable.setSpan(
@@ -913,7 +915,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = codeEditor.getLanguage().getSyntaxStrings().matcher( //Strings
+                    m = language.getSyntaxStrings().matcher( //Strings
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         for (ForegroundColorSpan span : editable.getSpans(
@@ -929,7 +931,7 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
-                    m = codeEditor.getLanguage().getSyntaxComments().matcher( //Comments
+                    m = language.getSyntaxComments().matcher( //Comments
                             editable.subSequence(topLineOffset, bottomLineOffset));
                     while (m.find()) {
                         boolean skip = false;
@@ -986,12 +988,12 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
         Timber.d("checkMatchingBracket: " + pos);
         getText().removeSpan(mOpenBracketSpan);
         getText().removeSpan(mClosedBracketSpan);
-        if (mBracketMatching && codeEditor.getLanguage() != null) {
+        if (mBracketMatching && language != null) {
             if (pos > 0 && pos <= getText().length()) {
                 char c1 = getText().charAt(pos - 1);
-                for (int i = 0; i < codeEditor.getLanguage().getLanguageBrackets().length; i++) {
-                    if (codeEditor.getLanguage().getLanguageBrackets()[i] == c1) {
-                        char c2 = codeEditor.getLanguage().getLanguageBrackets()[(i + 3) % 6];
+                for (int i = 0; i < language.getLanguageBrackets().length; i++) {
+                    if (language.getLanguageBrackets()[i] == c1) {
+                        char c2 = language.getLanguageBrackets()[(i + 3) % 6];
                         boolean open = false;
                         if (i <= 2) {
                             open = true;
@@ -1150,6 +1152,14 @@ public class TextProcessor extends AppCompatMultiAutoCompleteTextView {
 
     public void setInsertBrackets(boolean insertBrackets) {
         mInsertBracket = insertBrackets;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
+
+    public Language getLanguage() {
+        return this.language;
     }
 
     /**
