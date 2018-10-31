@@ -20,13 +20,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Application Theme -->
-    <style name="Theme.Editor.AppLight" parent="Theme.AppCompat.Light.NoActionBar"/>
     <!-- <style name="Theme.Editor.AppDark" parent="Theme.AppCompat.NoActionBar"/> -->
 
     <!-- Widgets and stuff... -->
-    <style name="Theme_Editor_NavigationView">
-        <item name="android:textColorSecondary">@color/gray</item>
-    </style>
 
     <!-- Base Dark Theme -->
     <style name="Theme.Editor.BaseDark" parent="Theme.AppCompat.NoActionBar">
@@ -38,7 +34,7 @@
         <item name="md_medium_font">josefin_sans_semibold.ttf</item>
         <item name="md_regular_font">josefin_sans_regular.ttf</item>
 -->
-        
+
 
         <item name="windowActionBar">false</item>
         <item name="windowActionModeOverlay">true</item>

@@ -1,4 +1,4 @@
-# CodeEditor   [![](https://jitpack.io/v/ahmadaghazadeh/CodeEditor.svg)](https://jitpack.io/#ahmadaghazadeh/CodeEditor)
+# CodeEditor [![](https://jitpack.io/v/ahmadaghazadeh/CodeEditor.svg)](https://jitpack.io/#ahmadaghazadeh/CodeEditor)
 
 This is a text/code(Base From [ModPE IDE] ) editor meant for integration as a modular component of the overall UI.
 The aim is to provide a powerful editor that can be used just like any other View.
@@ -11,8 +11,6 @@ Please note that this library is currently supported on android API 15 and above
 Integration with existing project
 
 ### [Click For Play Video](https://youtu.be/lq-P1qwgU1Q)
-
-[Stackoverflow](https://stackoverflow.com/a/52641368/1770868)
 
 <div align="center">
   <a href="https://youtu.be/lq-P1qwgU1Q"><img src="media/screenshot.png" alt="Play Video"></a>

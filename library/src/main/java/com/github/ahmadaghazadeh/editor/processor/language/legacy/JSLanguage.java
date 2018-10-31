@@ -50,6 +50,7 @@ public class JSLanguage implements Language {
             "(?<=\\b)((break)|(continue)|(else)|(for)|(function)|(if)|(in)|(new)" +
                     "|(this)|(var)|(while)|(return)|(case)|(catch)|(of)|(typeof)" +
                     "|(const)|(default)|(do)|(switch)|(try)|(null)|(true)" +
+
                     "|(false)|(eval)|(let))(?=\\b)"); //Слова без CASE_INSENSITIVE
 
     public final Pattern getSyntaxKeywords() {
