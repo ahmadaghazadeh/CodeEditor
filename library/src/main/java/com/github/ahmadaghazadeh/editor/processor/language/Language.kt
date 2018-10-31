@@ -17,18 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.ahmadaghazadeh.editor.processor.language;
+package com.github.ahmadaghazadeh.editor.processor.language
 
-import java.util.regex.Pattern;
+import java.util.regex.Pattern
 
-public abstract class Language {
-    public abstract Pattern getSyntaxNumbers();
-    public abstract Pattern getSyntaxSymbols();
-    public abstract Pattern getSyntaxBrackets();
-    public abstract Pattern getSyntaxKeywords();
-    public abstract Pattern getSyntaxMethods();
-    public abstract Pattern getSyntaxStrings();
-    public abstract Pattern getSyntaxComments();
-    public abstract char[] getLanguageBrackets();
-    public abstract String[] getAllCompletions();
+interface Language {
+    val syntaxNumbers: Pattern
+    val syntaxSymbols: Pattern
+    val syntaxBrackets: Pattern
+    val syntaxKeywords: Pattern
+    val syntaxMethods: Pattern
+    val syntaxStrings: Pattern
+    val syntaxComments: Pattern
+    val languageBrackets: CharArray
+    val allCompletions: Array<String>
 }
