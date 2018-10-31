@@ -4,10 +4,7 @@ import com.github.ahmadaghazadeh.editor.processor.language.legacy.CSSLanguage
 import com.github.ahmadaghazadeh.editor.processor.language.legacy.HtmlLanguage
 import com.github.ahmadaghazadeh.editor.processor.language.legacy.JSLanguage
 
-/**
- * TODO Will be renamed to (and replace) 'LanguageProvider', for merging reasons it is kept that way
- */
-object LanguageProvider2 {
+object LanguageProvider {
 
     fun of(supportedLanguage: SupportedLanguage): Language {
         return when (supportedLanguage) {

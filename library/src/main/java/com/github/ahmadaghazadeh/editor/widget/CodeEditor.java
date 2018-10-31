@@ -8,6 +8,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.annotation.UiThread;
 import android.support.annotation.WorkerThread;
 import android.text.Editable;
 import android.text.TextPaint;
@@ -25,6 +26,7 @@ import com.github.ahmadaghazadeh.editor.keyboard.ExtendedKeyboard;
 import com.github.ahmadaghazadeh.editor.processor.TextProcessor;
 import com.github.ahmadaghazadeh.editor.processor.language.Language;
 import com.github.ahmadaghazadeh.editor.processor.language.LanguageProvider;
+import com.github.ahmadaghazadeh.editor.processor.language.SupportedLanguage;
 import com.github.ahmadaghazadeh.editor.processor.utils.DefaultSetting;
 
 public class CodeEditor extends FrameLayout {
@@ -61,7 +63,8 @@ public class CodeEditor extends FrameLayout {
     }
 
     @BindingAdapter(value = {"code", "lang", "isReadOnly", "isShowExtendedKeyboard"})
-    public static void setCodeView(CodeEditor view, MutableLiveData<String> code, MutableLiveData<String> lang,
+    public static void setCodeView(CodeEditor view, MutableLiveData<String> code,
+                                   MutableLiveData<SupportedLanguage> lang,
                                    boolean isReadOnly,
                                    boolean isShowExtendedKeyboard) {
         if (view == null) {
@@ -71,7 +74,7 @@ public class CodeEditor extends FrameLayout {
             view.setText(code.getValue(), 1);
         }
         if (lang != null) {
-            view.setLanguage(LanguageProvider.getLanguage(lang.getValue()));
+            view.setLanguage(LanguageProvider.INSTANCE.of(lang.getValue()));
         }
         view.setReadOnly(isReadOnly);
         view.setShowExtendedKeyboard(isShowExtendedKeyboard);
@@ -104,16 +107,13 @@ public class CodeEditor extends FrameLayout {
         try {
             initEditor();
             String code = "";
-            String lang = "html";
+            SupportedLanguage lang = SupportedLanguage.JAVASCRIPT;
             isReadOnly = false;
             isShowExtendedKeyboard = false;
             if (attrs != null) {
                 TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CodeEditor, 0, 0);
                 if (a.hasValue(R.styleable.CodeEditor_code)) {
                     code = a.getString(R.styleable.CodeEditor_code);
-                }
-                if (a.hasValue(R.styleable.CodeEditor_lang)) {
-                    lang = a.getString(R.styleable.CodeEditor_lang);
                 }
                 isReadOnly = a.getBoolean(R.styleable.CodeEditor_isReadOnly, false);
                 isShowExtendedKeyboard = a.getBoolean(R.styleable.CodeEditor_isShowExtendedKeyboard, true);
@@ -173,7 +173,7 @@ public class CodeEditor extends FrameLayout {
             gutterView.link(editor, lineNumbers); //подключаем Gutter к редактору
             LinesCollection lines = new LinesCollection();
             lines.add(0, 0);
-            setLanguage(LanguageProvider.getLanguage(lang)); //ставим язык
+            setLanguage(LanguageProvider.INSTANCE.of(lang)); //ставим язык
             setText(code, 1); //заполняем поле текстом
             setLineStartsList(lines); //подгружаем линии
             refreshEditor(); //подключаем все настройки
@@ -256,7 +256,7 @@ public class CodeEditor extends FrameLayout {
             return "";
     }
 
-    @WorkerThread
+    @UiThread
     @Nullable
     public Language getLanguage() {
         return this.editor.getLanguage();
