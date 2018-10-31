@@ -17,13 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.ahmadaghazadeh.editor.processor.language;
+package com.github.ahmadaghazadeh.editor.processor.language.legacy;
 
+import com.github.ahmadaghazadeh.editor.processor.language.Language;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.ArrayUtils;
 
 import java.util.regex.Pattern;
 
-public class HtmlLanguage extends Language {
+public class HtmlLanguage implements Language {
 
 
     private static final Pattern SYNTAX_NUMBERS = Pattern.compile("(\\b(\\d*[.]?\\d+)\\b)");

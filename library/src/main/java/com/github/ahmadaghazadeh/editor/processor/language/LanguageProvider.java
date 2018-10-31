@@ -20,6 +20,10 @@
 package com.github.ahmadaghazadeh.editor.processor.language;
 
 
+import com.github.ahmadaghazadeh.editor.processor.language.legacy.CSSLanguage;
+import com.github.ahmadaghazadeh.editor.processor.language.legacy.HtmlLanguage;
+import com.github.ahmadaghazadeh.editor.processor.language.legacy.JSLanguage;
+
 public class LanguageProvider {
 
     public static Language getLanguage(String lang) {

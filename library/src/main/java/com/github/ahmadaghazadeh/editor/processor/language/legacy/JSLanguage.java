@@ -17,12 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.ahmadaghazadeh.editor.processor.language;
+package com.github.ahmadaghazadeh.editor.processor.language.legacy;
+
+import com.github.ahmadaghazadeh.editor.processor.language.Language;
 import com.github.ahmadaghazadeh.editor.processor.utils.text.ArrayUtils;
 
 import java.util.regex.Pattern;
 
-public class JSLanguage extends Language {
+public class JSLanguage implements Language {
 
 
     private static final Pattern SYNTAX_NUMBERS = Pattern.compile("(\\b(\\d*[.]?\\d+)\\b)");
@@ -155,7 +157,7 @@ public class JSLanguage extends Language {
             "serverMessageReceiveHook", "screenChangeHook", "chatReceiveHook", "chatHook"
     };
     private static final String[] JS_KEYWORDS = new String[] {
-            "function"
+            "function", "class"
     };
     private static final String[] GLOBAL_KEYWORDS = new String[] {
             "clientMessage", "getPlayerX()", "getPlayerY()", "getPlayerZ()", "getPlayerEnt()"
